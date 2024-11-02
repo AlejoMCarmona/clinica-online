@@ -1,7 +1,7 @@
 <div class="container">
     <h1 class="text-center text-title text-uppercase">Clínica Fleming</h1>
-    <div class="row justify-content-evenly">
-        <div class="col-lg-5 col-12 card mb-2">
+    <div class="row justify-content-evenly" *ngIf="!estaLogueado">
+        <div class="card col-lg-5 col-12 mb-2">
             <div class="card-body">
                 <h5 class="card-title mb-3">¿Eres un nuevo paciente?</h5>
                 <p class="card-text">
@@ -19,8 +19,29 @@
                 <a href="/registro" class="btn btn-dark w-100">Regístrate aquí</a>
             </div>
         </div>
-        <div class="col-lg-5 col-12 p-0">
+        <div class="col-5 p-0">
             <login></login>
+        </div>
+    </div>
+
+    <div class="row d-flex flex-column" *ngIf="estaLogueado">
+        <div class="col d-flex justify-content-center mb-3">
+            <div class="card card-clickeable" *ngIf="rol == 'admin'" routerLink="usuarios">
+                <img src="https://cdn-icons-png.flaticon.com/512/17/17115.png" class="card-img-top mx-auto">
+                <div class="card-body">
+                    <h5 class="card-title">Usuarios</h5>
+                    <p class="card-text">Gestiona los usuarios del hospital.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex justify-content-center mb-3">
+            <div class="card card-clickeable" *ngIf="rol == 'paciente' || rol == 'especialista'" routerLink="turnos">
+                <img src="https://cdn-icons-png.flaticon.com/512/17/17115.png" class="card-img-top mx-auto">
+                <div class="card-body">
+                    <h5 class="card-title">Turnos</h5>
+                    <p class="card-text">Gestiona tus turnos.</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

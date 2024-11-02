@@ -111,9 +111,9 @@ export class AuthService {
    */
   public async obtenerRolPorEmail(email: string): Promise<string> {
     try {
-      const rol: any[] = await this._fire.obtenerDocumentosPorCampo("roles-usuarios", "email", email);
-      if (rol.length != 0) {
-        const doc = rol[0];
+      const usuario: any[] = await this._fire.obtenerDocumentosPorCampo("usuarios", "email", email);
+      if (usuario.length > 0) {
+        const doc = usuario[0];
         return doc["rol"];
       } else {
         throw new Error('No se encontró ningún usuario con ese email');

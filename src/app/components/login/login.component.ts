@@ -59,7 +59,7 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
 
     this._authService.iniciarSesion(email, password)
-      .then(() => this._router.navigate(["home"]))
+      .then(() => location.reload())
       .catch(error => {
         let mensaje = "";
         if (error.message == "auth/email-no-verified") {

@@ -1,0 +1,8 @@
+.card-clickeable {
+    cursor: pointer;
+    width: 18rem !important; 
+}
+
+.card img {
+    width: 10rem;
+}

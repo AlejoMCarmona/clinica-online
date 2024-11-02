@@ -16,13 +16,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public suscripciones: Subscription = new Subscription();
   public estaLogueado: boolean = false;
   public username: string = "";
+  public rol!: string;
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.suscripciones.add(this.authService.obtenerEmailUsuarioObservable().subscribe(email => {
       this.estaLogueado = email != "";
       this.username = email != "" ? email.split("@")[0] : "";
+      this.authService.obtenerRolPorEmail(email).then(rol => {
+        this.rol = rol;
+      });
     }));
   };
   ngOnDestroy(): void {
