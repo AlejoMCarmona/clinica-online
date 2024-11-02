@@ -1,0 +1,10 @@
+.navbar {
+    background-color: var(--red-color) !important;
+}
+.navbar a, .navbar span {
+    color: var(--background-color);
+}
+
+.active-route {
+    font-weight: bolder;
+}

@@ -1,0 +1,77 @@
+<form [formGroup]="especialistaFormulario" (ngSubmit)="registrarEspecialista()">
+    <div class="row mb-3">
+        <div class="col">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" formControlName="nombre">
+            <div *ngIf="nombre?.touched || nombre?.dirty" class="text-danger mt-1">
+                <div *ngIf="nombre?.invalid">El nombre es requerido.</div>
+            </div>
+        </div>
+        <div class="col">
+            <label for="apellido" class="form-label">Apellido</label>
+            <input type="text" id="apellido" class="form-control" formControlName="apellido">
+            <div *ngIf="apellido?.touched || apellido?.dirty" class="text-danger mt-1">
+                <div *ngIf="apellido?.invalid">El apellido es requerido.</div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <label for="edad" class="form-label">Edad</label>
+            <input type="number" id="edad" class="form-control" formControlName="edad">
+            <div *ngIf="edad?.touched || edad?.dirty" class="text-danger">
+                <div *ngIf="edad?.hasError('required')">La edad es requerida.</div>
+                <div *ngIf="edad?.hasError('min') || edad?.hasError('max')">La edad debe estar entre 0 y 120 años.</div>
+            </div>
+        </div>
+        <div class="col">
+            <label for="dni" class="form-label">DNI</label>
+            <input type="text" id="dni" class="form-control" formControlName="dni">
+            <div *ngIf="dni?.invalid && (dni?.touched || dni?.dirty)" class="text-danger">
+                <div *ngIf="dni?.hasError('required')">El DNI es requerido.</div>
+                <div *ngIf="dni?.hasError('pattern')">El DNI debe contener exactamente 8 números.</div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Especialidades</label>
+        <div *ngFor="let especialidad of listaEspecialidades; let i = index" class="form-check">
+          <input type="checkbox" class="form-check-input" [id]="'especialidad-' + i" [value]="especialidad" 
+                 (change)="onCheckboxChange($event)">
+          <label class="form-check-label" [for]="'especialidad-' + i">{{ especialidad }}</label>
+        </div>
+        <div>
+          <label for="nuevaEspecialidad" class="form-label mt-2">Añadir nueva especialidad</label>
+          <input type="text" id="nuevaEspecialidad" class="form-control" formControlName="nuevaEspecialidad" (blur)="agregarNuevaEspecialidad()" placeholder="Ingrese nueva especialidad">
+        </div>
+        <div *ngIf="especialidades.touched || especialidades.dirty" class="text-danger mt-1">
+          <div *ngIf="especialidades.invalid">La especialidad es requerida.</div>
+        </div>
+      </div>
+    <div class="mb-3">
+        <label for="imagen" class="form-label">Imagen de perfil</label>
+        <input type="file" id="imagen" class="form-control" (change)="seleccionarImagen($event)" formControlName="imagen">
+        <div *ngIf="imagen?.touched || imagen?.dirty" class="text-danger mt-1">
+            <div *ngIf="imagen?.invalid">La imagen de perfil es requerida.</div>
+        </div>
+    </div>
+    <hr>
+    <div class="mb-3">
+        <label for="mail" class="form-label">Correo Electrónico</label>
+        <input type="email" id="mail" class="form-control" formControlName="mail">
+        <div *ngIf="mail?.touched || mail?.dirty" class="text-danger mt-1">
+            <div *ngIf="mail?.invalid">El email es requerido.</div>
+            <div *ngIf="mail?.hasError('email')">El email es inválido.</div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" id="password" class="form-control" formControlName="password">
+        <div *ngIf="password?.touched || password?.dirty" class="text-danger mt-1">
+            <div *ngIf="password?.invalid">La contraseña es requerida.</div>
+            <div *ngIf="password?.hasError('minlength')">La contraseña debe tener un mínimo de 6 caracteres.</div>
+        </div>
+    </div>
+    <hr>
+    <button type="submit" class="btn btn-dark w-100">Registrar especialista</button>
+</form>

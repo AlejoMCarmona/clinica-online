@@ -1,1 +1,48 @@
-/* You can add global styles to this file, and also import other style files */
+
+/* Variables */
+:root {
+    --background-color: #F7F4F3;
+    --blue-color: #335C67;
+    --yellow-color: #E09F3E;
+    --red-color: #9E2A2B;
+    --dark-red-color: #540B0E;
+    --text-seconday-color: #
+    --primary-font: "Quicksand", sans-serif;
+    --secondary-font: "Lexend", sans-serif;
+    --primary-weight: 200;
+}
+
+/*https://coolors.co/335c67-f7f4f3-e09f3e-9e2a2b-540b0e*/
+
+/*Globales*/
+html, body {
+    overflow-x: hidden;
+}
+body {
+    background-color: var(--background-color);
+}
+
+/*Clases utiles*/
+.text-title {
+    font-size: 6rem;
+    font-weight: var(--primary-weight);
+    font-family: var(--primary-font);
+    margin-bottom: 3rem;
+}
+.text-subtitle {
+    font-size: 3rem;
+    font-weight: var(--primary-weight);
+    font-family: var(--primary-font);
+}
+.text-primary-color {
+    color: var(--text-primary-color);
+}
+.text-primary-font {
+    font-family: var(--primary-font);
+}
+
+/*Deshabilitar componente*/
+.disabled {
+    pointer-events: none; /* Desactiva clicks */
+    opacity: 0.5; /* Aplica efecto grisado */
+}
