@@ -3,17 +3,16 @@
 
     <div class="container w-50 border p-4">
         <div class="mb-3">
-            <label class="form-label">¿Qué tipo de usuario deseas crear?</label>
+            <label class="form-label">Tipo de usuario</label>
             <select class="form-select" (change)="cambiarTipoUsuario($event)">
                 <option value="paciente" selected>Paciente</option>
                 <option value="especialista">Especialista</option>
+                <option *ngIf="permitirRegistroAdmin" value="admin">Admin</option>
             </select>
         </div>
         <hr>
-        <!--PACIENTE-->
-        <registro-paciente *ngIf="esPaciente"></registro-paciente>
-        <!--ESPECIALISTA-->
-        <registro-especialista *ngIf="!esPaciente"></registro-especialista>
+        <registro-admin *ngIf="altaRolElegido === 'admin'"></registro-admin>
+        <registro-paciente *ngIf="altaRolElegido === 'paciente'"></registro-paciente>
+        <registro-especialista *ngIf="altaRolElegido === 'especialista'"></registro-especialista>
     </div>
-    
 </div>

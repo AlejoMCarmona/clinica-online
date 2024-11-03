@@ -25,6 +25,13 @@ export class AuthService {
       await this.auth.signOut();
       throw Error("auth/email-no-verified");
     }
+
+    const usuario = (await this._fire.obtenerDocumentosPorCampo("usuarios", "email", email))[0];
+    if (usuario.rol == "especialista" && usuario.autorizado != true) {
+      await this.auth.signOut();
+      throw Error("auth/specialist-no-activated");
+    }
+
     return undefined;
   }
 

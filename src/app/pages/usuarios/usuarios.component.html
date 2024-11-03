@@ -1,0 +1,18 @@
+<div class="container">
+    <h1 class="text-center text-title text-uppercase">Usuarios</h1>
+    <div class="row justify-content-center mb-2">
+        <div class="col-lg-5 col-12 ">
+            <listado-especialistas></listado-especialistas>
+        </div>
+        <div class="col-lg-5 col-12">
+            <listado-pacientes></listado-pacientes>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <listado-admins></listado-admins>
+        </div>
+    </div>
+    <hr>
+    <registro [permitirRegistroAdmin]="true"></registro>
+</div>

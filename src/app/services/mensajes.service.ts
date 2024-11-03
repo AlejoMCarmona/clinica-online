@@ -66,6 +66,28 @@ export class MensajesService {
     Swal.fire(options);
   }
 
+  public lanzarNotificacionErrorCentroConFuncionalidad(titulo: string, mensaje: string, tiempo: number = 3000, callback?: () => void) {
+    this.lanzarNotificacionConFuncionalidad(titulo, mensaje, AlertPosition.Center, AlertIcon.Error, tiempo, callback);
+  }
+
+  private lanzarNotificacionConFuncionalidad(titulo: string, mensaje: string, posicion: AlertPosition, icono: AlertIcon, tiempo: number, callback?: () => void): void {
+    Swal.fire({
+      icon: icono,
+      title: titulo,
+      text: mensaje,
+      timer: tiempo, // Duración de la notificación en milisegundos
+      timerProgressBar: true,
+      showConfirmButton: false,
+      position: posicion,
+      willClose: () => {
+        // Ejecutar la función de callback si está definida
+        if (callback) {
+          callback();
+        }
+      }
+    });
+  }
+
   public lanzarPreguntaCentro(titulo: string, subtitulo: string, textoConfirmar: string, textoCancelar: string) {
     return this.lanzarConOpciones(titulo, subtitulo, AlertPosition.Center, AlertIcon.Question, textoConfirmar, textoCancelar);
   }

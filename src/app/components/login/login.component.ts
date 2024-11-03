@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MensajesService } from '../../services/mensajes.service';
 import { CommonModule } from '@angular/common';
 
@@ -17,12 +17,7 @@ export class LoginComponent {
   public loginForm: FormGroup;
   public inicioExitoso!: boolean;
 
-  constructor(
-    private fb: FormBuilder,
-    private _router: Router,
-    private _authService: AuthService,
-    private _mensajesService: MensajesService
-  ) {
+  constructor(private fb: FormBuilder,private _router: Router, private _authService: AuthService, private _mensajesService: MensajesService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -62,12 +57,18 @@ export class LoginComponent {
       .then(() => location.reload())
       .catch(error => {
         let mensaje = "";
-        if (error.message == "auth/email-no-verified") {
-          mensaje = "Por favor, verifica tu correo electrónico para poder iniciar sesión";
-        } else {
-          mensaje = "Las credenciales son inválidas, reinténtelo nuevamente.";
+        switch(error.message) {
+          case "auth/email-no-verified":
+            mensaje = "Por favor, verifica tu correo electrónico para poder iniciar sesión";
+          break;
+          case "auth/specialist-no-activated":
+            mensaje = "Nuestro equipo aún no ha revisado tu solicitud. Vuelve más tarde.";
+          break;
+          default:
+            mensaje = "Las credenciales son inválidas, reinténtelo nuevamente.";
+          break;
         }
-        this._mensajesService.lanzarMensajeError("ERROR", mensaje);
-      });
+        this._mensajesService.lanzarNotificacionErrorCentroConFuncionalidad("ERROR", mensaje, 3000, () => location.reload());
+      })
   }
 }
