@@ -20,7 +20,8 @@ export class HomeComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const email = await this._authService.obtenerEmailUsuario();
     this.estaLogueado = email != "";
-    this.rol = await this._authService.obtenerRolPorEmail(email);
-    console.log(this.estaLogueado);
+    if (email.length > 0) {
+      this.rol = await this._authService.obtenerRolPorEmail(email);
+    }
   }
 }

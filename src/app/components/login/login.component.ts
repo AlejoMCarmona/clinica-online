@@ -38,15 +38,15 @@ export class LoginComponent {
   }
 
   public autocompletarAdmin() {
-    this.loginForm.patchValue({ email: 'test1@test.com', password: 'admin123' });
+    this.loginForm.patchValue({ email: 'alejomcarmona@gmail.com', password: 'PASS1234' });
   }
 
   public autocompletarEspecialista() {
-    this.loginForm.patchValue({ email: 'test2@test.com', password: 'especialista123' });
+    this.loginForm.patchValue({ email: 'dotec93449@evasud.com', password: 'PASS1234' });
   }
 
   public autocompletarPaciente() {
-    this.loginForm.patchValue({ email: 'test3@test.com', password: 'paciente123' });
+    this.loginForm.patchValue({ email: 'namopaf753@evasud.com', password: 'PASS1234' });
   }
 
   public iniciarSesion() {

@@ -27,7 +27,7 @@
     <div class="row d-flex flex-column" *ngIf="estaLogueado">
         <div class="col d-flex justify-content-center mb-3">
             <div class="card card-clickeable" *ngIf="rol == 'admin'" routerLink="usuarios">
-                <img src="https://cdn-icons-png.flaticon.com/512/17/17115.png" class="card-img-top mx-auto">
+                <i class="bi bi-person-bounding-box mx-auto"></i>
                 <div class="card-body">
                     <h5 class="card-title">Usuarios</h5>
                     <p class="card-text">Gestiona los usuarios del hospital.</p>
@@ -36,7 +36,7 @@
         </div>
         <div class="col d-flex justify-content-center mb-3">
             <div class="card card-clickeable" *ngIf="rol == 'paciente' || rol == 'especialista'" routerLink="turnos">
-                <img src="https://cdn-icons-png.flaticon.com/512/17/17115.png" class="card-img-top mx-auto">
+                <i class="bi bi-calendar-plus mx-auto"></i>
                 <div class="card-body">
                     <h5 class="card-title">Turnos</h5>
                     <p class="card-text">Gestiona tus turnos.</p>
