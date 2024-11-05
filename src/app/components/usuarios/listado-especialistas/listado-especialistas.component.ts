@@ -20,15 +20,15 @@ export class ListadoEspecialistasComponent implements OnInit {
 
   ngOnInit(): void {
     this._firestoreService.obtenerDocumentosPorCampo("usuarios", "rol", "especialista")
-      .then(listaEspecialistas => {
-        this.listaEspecialistas = listaEspecialistas;
-        this.listaEspecialistas.forEach(e => {
-          this._storageService.obtenerUrlImagen("fotos-perfil/especialistas", e.id)
-            .then(url => e.imagen = url)
-            .catch(() => console.log("ERROR intentando obtener las imágenes de los especialistas"));
-        });
-      })
-      .catch(() => console.log("ERROR intentando obtener los especialistas"));
+    .then(listaEspecialistas => {
+      this.listaEspecialistas = listaEspecialistas;
+      this.listaEspecialistas.forEach(e => {
+        this._storageService.obtenerUrlImagen("fotos-perfil/especialistas", e.id)
+          .then(url => e.imagen = url)
+          .catch(() => console.log("ERROR intentando obtener las imágenes de los especialistas"));
+      });
+    })
+    .catch(() => console.log("ERROR intentando obtener los especialistas"));
   }
 
   public cambiarAutorizacion(usuario: any) {

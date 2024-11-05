@@ -1,10 +1,11 @@
-<form [formGroup]="adminFormulario" (ngSubmit)="registrarAdmin()">
+<form [formGroup]="adminFormulario" (ngSubmit)="registrarAdmin()" *ngIf="!estaCargando; else cargando">
     <div class="row mb-3">
         <div class="col">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" id="nombre" class="form-control" formControlName="nombre">
             <div *ngIf="nombre?.touched || nombre?.dirty" class="text-danger mt-1">
                 <div *ngIf="nombre?.invalid">El nombre es requerido.</div>
+                <div *ngIf="nombre?.hasError('pattern')">El nombre solo puede contener letras.</div>
             </div>
         </div>
         <div class="col">
@@ -12,6 +13,7 @@
             <input type="text" id="apellido" class="form-control" formControlName="apellido">
             <div *ngIf="apellido?.touched || apellido?.dirty" class="text-danger mt-1">
                 <div *ngIf="apellido?.invalid">El apellido es requerido.</div>
+                <div *ngIf="apellido?.hasError('pattern')">El apellido solo puede contener letras.</div>
             </div>
         </div>
     </div>
@@ -58,3 +60,11 @@
     </div>
     <button type="submit" class="btn btn-dark w-100">Registrar Admin</button>
 </form>
+
+<ng-template #cargando>
+    <div class="container d-flex justify-content-center align-items-center" style="height: 75vh;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</ng-template>

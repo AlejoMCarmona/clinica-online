@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDocs, or, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDocs, or, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, writeBatch } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -81,6 +81,28 @@ export class FirestoreService {
   }
 
   /**
+   * Sube múltiples documentos a una colección de Firestore de manera atómica.
+   * 
+   * @param data Array de documentos a subir, donde cada elemento es un objeto que representa un documento.
+   * @param nombreColeccion Nombre de la colección en Firestore a la que se subirán los documentos.
+   * @returns Una promesa que se resuelve cuando se completa la operación de subida de documentos. 
+   *          Si el array de datos está vacío, devuelve una promesa resuelta sin realizar ninguna operación.
+   */
+    public async subirDocumentos(data: any[], nombreColeccion: string) {
+      if (data.length == 0) return;
+
+      const batch = writeBatch(this._firestore);
+      const coleccion = collection(this._firestore, nombreColeccion);
+      
+      data.forEach(documento => {
+        const documentoRef = doc(coleccion);
+        batch.set(documentoRef, documento);
+      });
+      
+      await batch.commit();
+    }
+
+  /**
    * Modifica un documento existente en Firestore.
    * 
    * @param nombreColeccion - El nombre de la colección donde se encuentra el documento a modificar.
@@ -92,7 +114,7 @@ export class FirestoreService {
     const docRef = doc(this._firestore, nombreColeccion, documentoId);
     try {
       await updateDoc(docRef, nuevoDocumento);
-      console.log(`Documento ${documentoId} actualizado exitosamente.`);
+      console.log(`Documento actualizado exitosamente.`);
     } catch (error) {
       console.error("Error al actualizar el documento: ", error);
     }
@@ -109,7 +131,7 @@ export class FirestoreService {
     const docRef = doc(this._firestore, coleccion, documentoId);
     try {
       await deleteDoc(docRef);
-      console.log(`Documento ${documentoId} eliminado correctamente.`);
+      console.log(`Documento eliminado correctamente.`);
     } catch (error) {
       console.error("Error al eliminar el documento: ", error);
     }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FirestoreService } from '../../../services/firestore.service';
 import { MensajesService } from '../../../services/mensajes.service';
@@ -8,6 +8,7 @@ import { Usuario } from '../../../models/usuarios.interface';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
+import { Especialidad } from '../../../models/especialidades.interface';
 
 @Component({
   selector: 'registro-especialista',
@@ -19,13 +20,16 @@ import { StorageService } from '../../../services/storage.service';
 
 export class RegistroEspecialistaComponent implements OnInit {
   public especialistaFormulario!: FormGroup;
-  public listaEspecialidades: string[] = [];
+  public listaEspecialidades: string[] = []; // Lista de especialidades que se muestra en pantalla en todo momento (incluye las nuevas agregadas)
+  public listaEspecialidadesInicial: string[] = []; // Lista de especialidades iniciales (que se obtienen de la base de datos)
   public imagenSubida!: File;
+  public estaCargando: boolean = false;
+  @Output() registroCompletado = new EventEmitter<void>();
 
   constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private __mensajesService: MensajesService, private _authService: AuthService, private _router: Router, private _storageService: StorageService) {
     this.especialistaFormulario = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
+      apellido: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
       edad: ['', [Validators.required, Validators.min(0)]],
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
       especialidades: this.fb.array([], Validators.required),
@@ -41,6 +45,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     listaEspecialidades.forEach(especialidad => {
       this.listaEspecialidades.push(especialidad.nombre);
     });
+    this.listaEspecialidadesInicial = Array.from(this.listaEspecialidades);
   }
 
   get nombre() {
@@ -98,7 +103,18 @@ export class RegistroEspecialistaComponent implements OnInit {
   public agregarNuevaEspecialidad() {
     if (this.nuevaEspecialidad?.value.trim() && !this.listaEspecialidades.includes(this.nuevaEspecialidad?.value)) {
       this.listaEspecialidades.push(this.nuevaEspecialidad?.value);
+      this.nuevaEspecialidad.reset();
     }
+  }
+  private obtenerNuevasEspecialidades(): Especialidad[] {
+    let nuevasEspecialidades: Especialidad[] = [];
+    let especialidadesElegidas: string[] = this.especialidades.value;
+    especialidadesElegidas.forEach(especialidad => {
+      if (!this.listaEspecialidadesInicial.includes(especialidad)) {
+        nuevasEspecialidades.push({ nombre: especialidad });
+      };
+    });
+    return nuevasEspecialidades;
   }
 
   public async registrarEspecialista() {
@@ -107,13 +123,14 @@ export class RegistroEspecialistaComponent implements OnInit {
         this.especialistaFormulario.markAllAsTouched();
         return;
       }
-  
-      if (this.nuevaEspecialidad?.value) {
+
+      this.estaCargando = true;
+      const nuevasEspecialidades = this.obtenerNuevasEspecialidades();
+      if (nuevasEspecialidades.length > 0) {
         try {
-          this.especialidades.push(this.fb.control(this.nuevaEspecialidad.value));
-          await this._firestoreService.subirDocumento({ nombre: this.nuevaEspecialidad.value }, "especialidades");
+          await this._firestoreService.subirDocumentos(nuevasEspecialidades, "especialidades");
         } catch (error) {
-          console.error("Error al subir la nueva especialidad: ", error);
+          console.error("Error al subir las nuevas especialidades: ", error);
           this.__mensajesService.lanzarMensajeError("Error", "Hubo un problema al agregar la nueva especialidad. Por favor, inténtalo más tarde.");
           return;
         }
@@ -147,7 +164,8 @@ export class RegistroEspecialistaComponent implements OnInit {
         try {
           await this._storageService.subirImagen(this.imagenSubida, "fotos-perfil/especialistas", idUsuarioCreado);
           this.__mensajesService.lanzarMensajeExitoso(":)", "El proceso de creación de tu usuario como especialista fue enviado. Debes verificar tu correo electrónico y esperar a que un administrador revise tu solicitud.");
-          this._router.navigate(["home"]);
+          this.especialistaFormulario.reset();
+          this.registroCompletado.emit();
         } catch (error) {
           console.error("Error al subir la imagen: ", error);
           this.__mensajesService.lanzarMensajeError("Error", "El usuario fue creado, pero hubo un problema al subir la imagen de perfil. Por favor, contáctanos para más detalles.");
@@ -156,6 +174,8 @@ export class RegistroEspecialistaComponent implements OnInit {
     } catch (error) {
       console.error("Error inesperado en el proceso de registro: ", error);
       this.__mensajesService.lanzarMensajeError("Error", "Ocurrió un error inesperado. Por favor, inténtalo más tarde.");
+    } finally {
+      this.estaCargando = false;
     }
   }
 }

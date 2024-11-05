@@ -1,10 +1,11 @@
-<form [formGroup]="especialistaFormulario" (ngSubmit)="registrarEspecialista()">
+<form [formGroup]="especialistaFormulario" (ngSubmit)="registrarEspecialista()" *ngIf="!estaCargando; else cargando">
     <div class="row mb-3">
         <div class="col">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" id="nombre" class="form-control" formControlName="nombre">
             <div *ngIf="nombre?.touched || nombre?.dirty" class="text-danger mt-1">
                 <div *ngIf="nombre?.invalid">El nombre es requerido.</div>
+                <div *ngIf="nombre?.hasError('pattern')">El nombre solo puede contener letras.</div>
             </div>
         </div>
         <div class="col">
@@ -12,6 +13,7 @@
             <input type="text" id="apellido" class="form-control" formControlName="apellido">
             <div *ngIf="apellido?.touched || apellido?.dirty" class="text-danger mt-1">
                 <div *ngIf="apellido?.invalid">El apellido es requerido.</div>
+                <div *ngIf="apellido?.hasError('pattern')">El apellido solo puede contener letras.</div>
             </div>
         </div>
     </div>
@@ -42,7 +44,10 @@
         </div>
         <div>
           <label for="nuevaEspecialidad" class="form-label mt-2">Añadir nueva especialidad</label>
-          <input type="text" id="nuevaEspecialidad" class="form-control" formControlName="nuevaEspecialidad" (blur)="agregarNuevaEspecialidad()" placeholder="Ingrese nueva especialidad">
+          <div class="input-group">
+            <input type="text" id="nuevaEspecialidad" class="form-control" formControlName="nuevaEspecialidad" placeholder="Ingrese nueva especialidad">
+            <button class="btn btn-dark" type="button" (click)="agregarNuevaEspecialidad()">+</button>
+          </div>
         </div>
         <div *ngIf="especialidades.touched || especialidades.dirty" class="text-danger mt-1">
           <div *ngIf="especialidades.invalid">La especialidad es requerida.</div>
@@ -75,3 +80,11 @@
     <hr>
     <button type="submit" class="btn btn-dark w-100">Registrar especialista</button>
 </form>
+
+<ng-template #cargando>
+    <div class="container d-flex justify-content-center align-items-center" style="height: 75vh;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</ng-template>

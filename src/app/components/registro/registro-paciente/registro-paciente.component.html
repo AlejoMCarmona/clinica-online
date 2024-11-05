@@ -1,4 +1,4 @@
-<form [formGroup]="pacienteFormulario" (ngSubmit)="registrarPaciente()">
+<form [formGroup]="pacienteFormulario" (ngSubmit)="registrarPaciente()" *ngIf="!estaCargando; else cargando">
     <div class="row mb-3">
         <div class="col">
             <label for="nombre" class="form-label">Nombre</label>
@@ -76,3 +76,11 @@
     <hr>
     <button type="submit" class="btn btn-dark w-100">Registrar paciente</button>
 </form>
+
+<ng-template #cargando>
+    <div class="container d-flex justify-content-center align-items-center" style="height: 75vh;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</ng-template>

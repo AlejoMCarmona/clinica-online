@@ -20,6 +20,11 @@ export class ListadoAdminsComponent {
     this._firestoreService.obtenerDocumentosPorCampo("usuarios", "rol", "admin")
     .then(listaAdmins => {
       this.listaAdmins = listaAdmins;
+      this.listaAdmins.forEach(a => {
+        this._storageService.obtenerUrlImagen("fotos-perfil/admins", a.id)
+        .then(url => a.imagen = url)
+        .catch(() => console.log("ERROR intentando obtener las imágenes de los admins"));
+      });
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MensajesService } from '../../../services/mensajes.service';
 import { AuthService } from '../../../services/auth.service';
@@ -18,21 +18,19 @@ import { CommonModule } from '@angular/common';
 export class RegistroAdminComponent {
   public adminFormulario!: FormGroup;
   public imagenSubida!: File;
+  public estaCargando!: boolean;
+  @Output() registroCompletado = new EventEmitter<void>();
 
   constructor(private fb: FormBuilder, private __mensajesService: MensajesService, private _authService: AuthService, private _router: Router, private _storageService: StorageService) {
     this.adminFormulario = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      edad: ['', [Validators.required, Validators.min(0)]],
+      nombre: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
+      apellido: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
+      edad: ['', [Validators.required, Validators.min(0), Validators.max(120)]],
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
       mail: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       imagen: ['', Validators.required]
     });
-  }
-
-  ngOnInit(): void {
-    // Cualquier lógica que necesites al inicializar el componente.
   }
 
   get nombre() {
@@ -74,10 +72,11 @@ export class RegistroAdminComponent {
         return;
       }
 
+      this.estaCargando = true;
       const admin: Usuario = {
         email: this.mail?.value,
         rol: "admin",
-        autorizado: true, // Suponemos que los administradores son autorizados por defecto
+        autorizado: true, // Los administradores son autorizados por defecto
         informacion: {
           nombre: this.nombre?.value,
           apellido: this.apellido?.value,
@@ -99,7 +98,8 @@ export class RegistroAdminComponent {
         try {
           await this._storageService.subirImagen(this.imagenSubida, "fotos-perfil/admins", idUsuarioCreado);
           this.__mensajesService.lanzarMensajeExitoso(":)", "El proceso de creación de tu usuario como administrador fue exitoso.");
-          this._router.navigate(["home"]);
+          this.adminFormulario.reset();
+          this.registroCompletado.emit();
         } catch (error) {
           console.error("Error al subir la imagen: ", error);
           this.__mensajesService.lanzarMensajeError("Error", "El usuario fue creado, pero hubo un problema al subir la imagen de perfil. Por favor, contáctanos para más detalles.");
@@ -108,6 +108,8 @@ export class RegistroAdminComponent {
     } catch (error) {
       console.error("Error inesperado en el proceso de registro: ", error);
       this.__mensajesService.lanzarMensajeError("Error", "Ocurrió un error inesperado. Por favor, inténtalo más tarde.");
+    } finally {
+      this.estaCargando = false;
     }
   }
 }

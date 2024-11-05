@@ -11,8 +11,8 @@
             </select>
         </div>
         <hr>
-        <registro-admin *ngIf="altaRolElegido === 'admin'"></registro-admin>
-        <registro-paciente *ngIf="altaRolElegido === 'paciente'"></registro-paciente>
-        <registro-especialista *ngIf="altaRolElegido === 'especialista'"></registro-especialista>
+        <registro-admin *ngIf="permitirRegistroAdmin && altaRolElegido === 'admin'" (registroCompletado)="redirigir()"></registro-admin>
+        <registro-paciente *ngIf="altaRolElegido === 'paciente'" (registroCompletado)="redirigir()"></registro-paciente>
+        <registro-especialista *ngIf="altaRolElegido === 'especialista'" (registroCompletado)="redirigir()"></registro-especialista>
     </div>
 </div>

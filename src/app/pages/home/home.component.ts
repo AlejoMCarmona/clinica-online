@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 export class HomeComponent implements OnInit {
   public estaLogueado!: boolean;
   public rol!: string;
+  public estaCargando: boolean = true;
 
   constructor(private _authService: AuthService) {}
   
@@ -24,5 +25,6 @@ export class HomeComponent implements OnInit {
     if (email.length > 0) {
       this.rol = await this._authService.obtenerRolPorEmail(email);
     }
+    this.estaCargando = false;
   }
 }

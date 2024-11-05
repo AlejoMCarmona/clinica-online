@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Paciente } from '../../../models/paciente.interface';
 import { Usuario } from '../../../models/usuarios.interface';
@@ -20,14 +20,16 @@ export class RegistroPacienteComponent {
   public pacienteFormulario!: FormGroup;
   public imagenPerfilPrimariaSubida!: File;
   public imagenPerfilSecundariaSubida!: File;
+  public estaCargando: boolean = false;
+  @Output() registroCompletado = new EventEmitter<void>();
 
   constructor(private fb: FormBuilder, private _authService: AuthService, private _mensajesService: MensajesService, private _storageService: StorageService, private _router: Router) {
     this.pacienteFormulario = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
+      apellido: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
       edad: ['', [Validators.required, Validators.min(0), Validators.max(120)]],
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
-      obraSocial: ['', Validators.required],
+      obraSocial: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       imagenPerfilPrimaria: [null, Validators.required],
@@ -86,6 +88,7 @@ export class RegistroPacienteComponent {
         return;
       }
   
+      this.estaCargando = true;
       const paciente: Paciente = {
         nombre: this.nombre?.value,
         apellido: this.apellido?.value,
@@ -115,7 +118,8 @@ export class RegistroPacienteComponent {
           await this._storageService.subirImagen(this.imagenPerfilPrimariaSubida, "fotos-perfil/pacientes", idUsuarioCreado + "-primaria");
           await this._storageService.subirImagen(this.imagenPerfilSecundariaSubida, "fotos-perfil/pacientes", idUsuarioCreado + "-secundaria");
           this._mensajesService.lanzarMensajeExitoso(":)", "El proceso de creación de tu usuario como paciente fue exitoso. Debes verificar tu correo electrónico para poder iniciar sesión.");
-          this._router.navigate(["home"]);
+          this.pacienteFormulario.reset();
+          this.registroCompletado.emit();
         } catch (error) {
           console.error("Error al subir la imagen: ", error);
           this._mensajesService.lanzarMensajeError("Error", "El usuario fue creado, pero hubo un problema al subir la imagen de perfil. Por favor, contáctanos para más detalles.");
@@ -124,6 +128,8 @@ export class RegistroPacienteComponent {
     } catch (error) {
       console.error("Error inesperado en el proceso de registro: ", error);
       this._mensajesService.lanzarMensajeError("Error", "Ocurrió un error inesperado. Por favor, inténtalo más tarde.");
+    } finally {
+      this.estaCargando = false;
     }
   }
 }

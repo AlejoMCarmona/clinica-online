@@ -37,10 +37,19 @@ export class AuthService {
 
   public async registrarUsuarioConVerificacion(email: string, password: string, usuarioInformacion: Usuario): Promise<string | undefined> {
     try {
+      let usuarioOriginal;
+      if (this.auth.currentUser) usuarioOriginal = this.auth.currentUser;
+
       const idUsuario = await this.subirUsuario(usuarioInformacion); // Creo el usuario con toda su información
       await createUserWithEmailAndPassword(this.auth, email, password); // Creo el usuario en Auth
       await sendEmailVerification(this.auth.currentUser!); // Envío el mail de verificación
-      this.cerrarSesion();
+
+      if (usuarioOriginal) {
+        this.auth.updateCurrentUser(usuarioOriginal);
+      } else {
+        this.cerrarSesion();
+      }
+
       return idUsuario;
     }
     catch (error: any) {
@@ -129,14 +138,6 @@ export class AuthService {
       console.error('Error al obtener el rol del usuario por email:', error);
       throw error;
     }
-  }
-
-  private async subirRol(email: string, rol: string) {
-    const data = {
-      email: email,
-      rol: rol
-    }
-    await this._fire.subirDocumento(data, "roles-usuarios");
   }
 
   /**
