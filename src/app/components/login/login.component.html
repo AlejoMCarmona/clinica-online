@@ -3,16 +3,16 @@
         <h5 class="card-title mb-3">Iniciar Sesión</h5>
         <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
             <div class="mb-3">
-              <label for="inputEmail" class="form-label">Dirección de correo electrónico</label>
-              <input type="email" formControlName="email" class="form-control" id="inputEmail">
-              <div *ngIf="email?.dirty && email?.touched" class="text-danger">
+              <label for="email" class="form-label">Dirección de correo electrónico</label>
+              <input type="email" formControlName="email" class="form-control" id="email">
+              <div *ngIf="email?.dirty || email?.touched" class="text-danger">
                 <div *ngIf="email?.invalid">El email es requerido y debe ser válido.</div>
               </div>
             </div>
             <div class="mb-3">
               <label for="inputPassword" class="form-label">Contraseña</label>
               <input type="password" formControlName="password" class="form-control" id="inputPassword">
-              <div *ngIf="password?.dirty && password?.touched" class="text-danger">
+              <div *ngIf="password?.dirty || password?.touched" class="text-danger">
                 <div *ngIf="password?.invalid">La contraseña es requerida.</div>
               </div>
             </div>

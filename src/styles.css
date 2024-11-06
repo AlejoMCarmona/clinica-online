@@ -46,3 +46,8 @@ body {
     pointer-events: none; /* Desactiva clicks */
     opacity: 0.5; /* Aplica efecto grisado */
 }
+
+.tabla-scroll {
+    max-height: 400px !important;
+    overflow-y: auto;   
+}

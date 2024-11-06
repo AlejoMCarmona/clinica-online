@@ -1,19 +1,21 @@
 <h3>Pacientes</h3>
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>Nombre Completo</th>
-            <th>Edad</th>
-            <th>Obra Social</th>
-            <th>Imagen</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let usuario of listaPacientes">
-            <td>{{ usuario.informacion.nombre }} {{ usuario.informacion.apellido }}</td>
-            <td>{{ usuario.informacion.edad }}</td>
-            <td>{{ usuario.informacion.obraSocial }}</td>
-            <td><img class="img-perfil mx-auto" src="{{ usuario.imagen }}"></td>
-        </tr>
-    </tbody>
-</table>
+<div class="tabla-scroll">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre completo</th>
+                <th>Edad</th>
+                <th>Obra Social</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let usuario of listaPacientes">
+                <td>{{ usuario.informacion.nombre }} {{ usuario.informacion.apellido }}</td>
+                <td>{{ usuario.informacion.edad }}</td>
+                <td>{{ usuario.informacion.obraSocial }}</td>
+                <td><img class="img-perfil mx-auto" src="{{ usuario.imagen }}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

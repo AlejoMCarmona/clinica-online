@@ -54,7 +54,7 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
 
     this._authService.iniciarSesion(email, password)
-      .then(() => location.reload())
+      .then(() => this._router.navigate(["home"]))
       .catch(error => {
         let mensaje = "";
         switch(error.message) {

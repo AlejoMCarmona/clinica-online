@@ -10,11 +10,11 @@ import { Router } from '@angular/router';
   selector: 'registro',
   standalone: true,
   imports: [ CommonModule, ReactiveFormsModule, RegistroPacienteComponent, RegistroEspecialistaComponent, RegistroAdminComponent ],
-  templateUrl: './registro.component.html',
-  styleUrl: './registro.component.css'
+  templateUrl: './registro-page.component.html',
+  styleUrl: './registro-page.component.css'
 })
 
-export class RegistroComponent implements OnInit {
+export class RegistroPageComponent implements OnInit {
   @Input() permitirRegistroAdmin: boolean = false;
   @Input() habilitarRedireccionamiento: boolean = true;
   @Input() rutaRedireccionamiento: string = "/home";

@@ -1,21 +1,23 @@
 <h3>Administradores</h3>
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>Nombre completo</th>
-            <th>Edad</th>
-            <th>DNI</th>
-            <th>Correo</th>
-            <th>Imagen</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let admin of listaAdmins">
-            <td>{{ admin.informacion.nombre }} {{ admin.informacion.apellido }}</td>
-            <td>{{ admin.informacion.edad }}</td>
-            <td>{{ admin.informacion.dni }}</td>
-            <td>{{ admin.email }}</td>
-            <td><img src="{{admin.imagen}}" style="width: 50px;"></td>
-        </tr>
-    </tbody>
-</table>
+<div class="tabla-scroll">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre completo</th>
+                <th>Edad</th>
+                <th>DNI</th>
+                <th>Correo</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let admin of listaAdmins">
+                <td>{{ admin.informacion.nombre }} {{ admin.informacion.apellido }}</td>
+                <td>{{ admin.informacion.edad }}</td>
+                <td>{{ admin.informacion.dni }}</td>
+                <td>{{ admin.email }}</td>
+                <td><img src="{{admin.imagen}}" style="width: 50px;"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

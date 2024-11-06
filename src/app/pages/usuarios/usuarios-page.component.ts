@@ -3,17 +3,17 @@ import { ListadoEspecialistasComponent } from '../../components/usuarios/listado
 import { ListadoPacientesComponent } from '../../components/usuarios/listado-pacientes/listado-pacientes.component';
 import { ListadoAdminsComponent } from '../../components/usuarios/listado-admins/listado-admins.component';
 import { CommonModule } from '@angular/common';
-import { RegistroComponent } from '../registro/registro.component';
+import { RegistroPageComponent } from '../registro/registro-page.component';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [ CommonModule, ListadoEspecialistasComponent, ListadoPacientesComponent, ListadoAdminsComponent, RegistroComponent ],
-  templateUrl: './usuarios.component.html',
-  styleUrl: './usuarios.component.css'
+  imports: [ CommonModule, ListadoEspecialistasComponent, ListadoPacientesComponent, ListadoAdminsComponent, RegistroPageComponent ],
+  templateUrl: './usuarios-page.component.html',
+  styleUrl: './usuarios-page.component.css'
 })
 
-export class UsuariosComponent {
+export class UsuariosPageComponent {
   public altaRolElegido!: string;
 
   ngOnInit(): void {

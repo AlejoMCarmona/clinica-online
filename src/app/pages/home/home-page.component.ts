@@ -10,11 +10,11 @@ import { BackgroundImageDirective } from '../../directives/background-image.dire
   selector: 'app-home',
   standalone: true,
   imports: [ LoginComponent, CommonModule, RouterLink, BackgroundImageDirective ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  templateUrl: './home-page.component.html',
+  styleUrl: './home-page.component.css'
 })
 
-export class HomeComponent implements OnInit {
+export class HomePageComponent implements OnInit {
   public estaLogueado!: boolean;
   public rol!: string;
   public estaCargando: boolean = true;
