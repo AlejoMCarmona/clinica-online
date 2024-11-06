@@ -19,6 +19,9 @@
             <a href="#" class="nav-link" routerLinkActive="active-route" (click)="cerrarSesion()">Cerrar sesión</a>
           </li>
         </ul>
+        <span class="navbar-text fs-6 me-2 pe-2 border-end" *ngIf="estaLogueado">
+          Rol: {{rol}}
+        </span>
         <span class="navbar-text fs-6 me-2" *ngIf="estaLogueado">
           ¡Bienvenido {{username}}!
         </span>

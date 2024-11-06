@@ -23,7 +23,7 @@
             <input type="number" id="edad" class="form-control" formControlName="edad">
             <div *ngIf="edad?.touched || edad?.dirty" class="text-danger">
                 <div *ngIf="edad?.hasError('required')">La edad es requerida.</div>
-                <div *ngIf="edad?.hasError('min') || edad?.hasError('max')">La edad debe estar entre 0 y 120 años.</div>
+                <div *ngIf="edad?.hasError('min') || edad?.hasError('max')">La edad debe estar entre 21 y 120 años.</div>
             </div>
         </div>
         <div class="col">

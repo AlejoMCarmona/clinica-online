@@ -1,5 +1,40 @@
 <div class="container" *ngIf="!estaCargando; else cargando">
     <h1 class="text-center text-title text-uppercase">Clínica Fleming</h1>
+    <div [appBackgroundImageDirective]="this.urlImagenHome" class="home-background container-fluid d-flex align-items-center justify-content-center mb-4">
+        <div class="info-card col-8 text-white text-center p-4 border border-secondary rounded" *ngIf="!estaLogueado">
+            <h3 class="text-uppercase mb-3">Bienvenidos</h3>
+            <p>
+                En Clínica Fleming, nos dedicamos hace más de 30 años a brindar atención médica de alta calidad para nuestros pacientes. Contamos con un equipo de profesionales altamente calificados y comprometidos con tu bienestar. Nuestro objetivo es ofrecer una atención personalizada y eficaz, asegurando el cuidado integral de nuestra comunidad.
+            </p>
+            <p>
+                Nuestros servicios incluyen atención médica especializada, diagnóstico avanzado, y un enfoque centrado en el paciente. Ya sea que necesites una consulta general o un tratamiento especializado, estamos aquí para ayudarte.
+            </p>
+            <p class="font-weight-bold">
+                ¡Gracias por elegirnos como tu centro de salud de confianza!
+            </p>
+        </div>
+
+        <div class="row d-flex flex-column" *ngIf="estaLogueado">
+            <div class="col d-flex justify-content-center mb-3">
+                <div class="card card-clickeable" *ngIf="rol == 'admin'" routerLink="/usuarios">
+                    <i class="bi bi-person-bounding-box mx-auto"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Usuarios</h5>
+                        <p class="card-text">Gestiona los usuarios del hospital.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center mb-3">
+                <div class="card card-clickeable" *ngIf="rol == 'paciente' || rol == 'especialista'" routerLink="turnos">
+                    <i class="bi bi-calendar-plus mx-auto"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Turnos</h5>
+                        <p class="card-text">Gestiona tus turnos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row justify-content-evenly" *ngIf="!estaLogueado">
         <div class="card col-lg-5 col-12 mb-2">
             <div class="card-body">
@@ -21,27 +56,6 @@
         </div>
         <div class="col-5 p-0">
             <login></login>
-        </div>
-    </div>
-
-    <div class="row d-flex flex-column" *ngIf="estaLogueado">
-        <div class="col d-flex justify-content-center mb-3">
-            <div class="card card-clickeable" *ngIf="rol == 'admin'" routerLink="/usuarios">
-                <i class="bi bi-person-bounding-box mx-auto"></i>
-                <div class="card-body">
-                    <h5 class="card-title">Usuarios</h5>
-                    <p class="card-text">Gestiona los usuarios del hospital.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col d-flex justify-content-center mb-3">
-            <div class="card card-clickeable" *ngIf="rol == 'paciente' || rol == 'especialista'" routerLink="turnos">
-                <i class="bi bi-calendar-plus mx-auto"></i>
-                <div class="card-body">
-                    <h5 class="card-title">Turnos</h5>
-                    <p class="card-text">Gestiona tus turnos.</p>
-                </div>
-            </div>
         </div>
     </div>
 </div>

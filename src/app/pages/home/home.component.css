@@ -6,3 +6,14 @@
 i {
     font-size: 8rem;
 }
+
+.home-background {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 75vh;
+}
+
+.info-card {
+    background: rgba(0, 0, 0, 0.7);
+}

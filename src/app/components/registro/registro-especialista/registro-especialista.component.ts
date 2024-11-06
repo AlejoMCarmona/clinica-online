@@ -30,7 +30,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     this.especialistaFormulario = this.fb.group({
       nombre: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
       apellido: ['', [Validators.required, Validators.pattern('^[A-Za-z]+( [A-Za-z]+)*$')]],
-      edad: ['', [Validators.required, Validators.min(0)]],
+      edad: ['', [Validators.required, Validators.min(21), Validators.max(120)]],
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
       especialidades: this.fb.array([], Validators.required),
       nuevaEspecialidad: [''],
