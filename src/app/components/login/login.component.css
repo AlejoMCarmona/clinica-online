@@ -1,0 +1,7 @@
+.img-boton {
+    background-size: cover;
+    background-position: center;
+    width: 6rem; /* Ajusta el tamaño según prefieras */
+    height: 6rem;
+    border: none;
+}

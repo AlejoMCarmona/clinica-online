@@ -4,11 +4,13 @@ import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MensajesService } from '../../services/mensajes.service';
 import { CommonModule } from '@angular/common';
+import { usuariosAutocompletados } from '../../../secrets';
+import { BackgroundImageDirective } from '../../directives/background-image.directive';
 
 @Component({
   selector: 'login',
   standalone: true,
-  imports: [ RouterLink, ReactiveFormsModule, CommonModule ],
+  imports: [ RouterLink, ReactiveFormsModule, CommonModule, BackgroundImageDirective ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -16,12 +18,14 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   public loginForm: FormGroup;
   public inicioExitoso!: boolean;
+  public usuarios: any[] = [];
 
   constructor(private fb: FormBuilder,private _router: Router, private _authService: AuthService, private _mensajesService: MensajesService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
+    this.usuarios = usuariosAutocompletados;
   }
 
   get email() {
@@ -32,16 +36,8 @@ export class LoginComponent {
     return this.loginForm.get('password');
   }
 
-  public autocompletarAdmin() {
-    this.loginForm.patchValue({ email: 'alejomcarmona@gmail.com', password: 'PASS1234' });
-  }
-
-  public autocompletarEspecialista() {
-    this.loginForm.patchValue({ email: 'dotec93449@evasud.com', password: 'PASS1234' });
-  }
-
-  public autocompletarPaciente() {
-    this.loginForm.patchValue({ email: 'namopaf753@evasud.com', password: 'PASS1234' });
+  public autocompletar(usuario: any) {
+    this.loginForm.patchValue({ email: usuario.email, password: usuario.password });
   }
 
   public iniciarSesion() {

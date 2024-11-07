@@ -45,3 +45,4 @@ Thumbs.db
 # Firebase
 /.firebase
 /src/environmentConfig.ts
+/src/secrets.ts

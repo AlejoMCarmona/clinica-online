@@ -20,10 +20,9 @@
                 <div class="row mb-2">
                     <button type="submit" class="btn btn-dark w-100" [disabled]="loginForm.invalid">Iniciar sesión</button>
                 </div>
-                <div class="row">
-                    <button type="button" class="btn btn-dark col me-1" (click)="autocompletarAdmin()">Autocompletar admin</button>
-                    <button type="button" class="btn btn-dark col me-1" (click)="autocompletarEspecialista()">Autocompletar especialista</button>
-                    <button type="button" class="btn btn-dark col" (click)="autocompletarPaciente()">Autocompletar paciente</button>  
+                <p class="text-center">Acceso rápido:</p>
+                <div class="row d-flex justify-content-evenly">
+                    <button *ngFor="let usuario of this.usuarios" [appBackgroundImageDirective]="usuario.urlImagen" type="button" class="btn btn-dark col-2 rounded-circle img-boton" (click)="autocompletar(usuario)"></button>
                 </div>
             </div>
         </form>
