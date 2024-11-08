@@ -40,6 +40,9 @@ body {
 .text-primary-font {
     font-family: var(--primary-font);
 }
+.text-secondary-font {
+    font-family: var(--secondary-font);
+}
 
 /*Deshabilitar componente*/
 .disabled {

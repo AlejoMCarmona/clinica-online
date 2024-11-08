@@ -5,11 +5,12 @@ import { RegistroPacienteComponent } from '../../components/registro/registro-pa
 import { RegistroEspecialistaComponent } from '../../components/registro/registro-especialista/registro-especialista.component';
 import { RegistroAdminComponent } from '../../components/registro/registro-admin/registro-admin.component';
 import { Router } from '@angular/router';
+import { BackgroundImageDirective } from '../../directives/background-image.directive';
 
 @Component({
   selector: 'registro',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule, RegistroPacienteComponent, RegistroEspecialistaComponent, RegistroAdminComponent ],
+  imports: [ CommonModule, ReactiveFormsModule, RegistroPacienteComponent, RegistroEspecialistaComponent, RegistroAdminComponent, BackgroundImageDirective ],
   templateUrl: './registro-page.component.html',
   styleUrl: './registro-page.component.css'
 })
@@ -18,16 +19,14 @@ export class RegistroPageComponent implements OnInit {
   @Input() permitirRegistroAdmin: boolean = false;
   @Input() habilitarRedireccionamiento: boolean = true;
   @Input() rutaRedireccionamiento: string = "/home";
-  public altaRolElegido: string = 'paciente';
+  public altaRolElegido: string = "";
 
   constructor(private _router: Router) {}
 
-  ngOnInit(): void {
-    this.altaRolElegido = 'paciente';
-  }
+  ngOnInit(): void {}
 
-  public cambiarTipoUsuario(event: any): void {
-    this.altaRolElegido = event.target.value.toLowerCase();
+  public cambiarTipoUsuario(tipoUsuario: string): void {
+    this.altaRolElegido = tipoUsuario.toLowerCase();
   }
 
   public redirigir(): void {

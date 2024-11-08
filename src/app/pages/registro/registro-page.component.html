@@ -2,17 +2,22 @@
     <h1 class="text-title text-center">Registro de Usuario</h1>
 
     <div class="container w-50 border p-4">
-        <div class="mb-3">
-            <label class="form-label">Tipo de usuario</label>
-            <select class="form-select" (change)="cambiarTipoUsuario($event)">
-                <option value="paciente" selected>Paciente</option>
-                <option value="especialista">Especialista</option>
-                <option *ngIf="permitirRegistroAdmin" value="admin">Admin</option>
-            </select>
+        <div class="row" *ngIf="this.altaRolElegido == ''">
+            <h5 class="text-center my-3">Tipo de usuario a registrar</h5>
+            <div class="row d-flex justify-content-evenly mt-1 mb-3">
+                <button type="button" *ngIf="permitirRegistroAdmin" class="btn btn-dark col-2 rounded-circle img-boton" (click)="cambiarTipoUsuario('admin')"><i class="bi bi-person-badge-fill fs-1"></i></button>
+                <button type="button" class="btn btn-dark col-2 rounded-circle img-boton" (click)="cambiarTipoUsuario('especialista')"><i class="bi bi-person-heart fs-1"></i></button>
+                <button type="button" class="btn btn-dark col-2 rounded-circle img-boton" (click)="cambiarTipoUsuario('paciente')"><i class="bi bi-person-fill fs-1"></i></button>
+            </div>
         </div>
+        <div class="row d-flex align-items-end" *ngIf="this.altaRolElegido != ''">
+            <button class="btn btn-dark mb-3 col" (click)="cambiarTipoUsuario('')"><i class="bi bi-arrow-left me-3 fs-5"></i>Selección de usuario</button>
+        </div>
+        <div class="row" *ngIf="this.altaRolElegido != ''">
         <hr>
-        <registro-admin *ngIf="permitirRegistroAdmin && altaRolElegido === 'admin'" (registroCompletado)="redirigir()"></registro-admin>
-        <registro-paciente *ngIf="altaRolElegido === 'paciente'" (registroCompletado)="redirigir()"></registro-paciente>
-        <registro-especialista *ngIf="altaRolElegido === 'especialista'" (registroCompletado)="redirigir()"></registro-especialista>
+            <registro-admin *ngIf="permitirRegistroAdmin && altaRolElegido === 'admin'" (registroCompletado)="redirigir()"></registro-admin>
+            <registro-paciente *ngIf="altaRolElegido === 'paciente'" (registroCompletado)="redirigir()"></registro-paciente>
+            <registro-especialista *ngIf="altaRolElegido === 'especialista'" (registroCompletado)="redirigir()"></registro-especialista>
+        </div>
     </div>
 </div>

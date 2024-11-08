@@ -1,3 +1,4 @@
+<h2 class="text-start mb-4 text-secondary-font">Nuevo paciente</h2>
 <form [formGroup]="pacienteFormulario" (ngSubmit)="registrarPaciente()" *ngIf="!estaCargando; else cargando">
     <div class="row mb-3">
         <div class="col">
