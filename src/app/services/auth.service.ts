@@ -140,6 +140,28 @@ export class AuthService {
     }
   }
 
+    /**
+   * Busca en Firestore el rol asociado al usuario con el email dado.
+   * 
+   * @param email - Email del usuario para buscar su rol.
+   * @returns Promise que resuelve el rol del usuario o lanza un error si no se encuentra.
+   */
+    public async obtenerIdUsuario(): Promise<string> {
+      try {
+        const emailUsuario = await this.obtenerEmailUsuario();
+        const usuario: any[] = await this._fire.obtenerDocumentosPorCampo("usuarios", "email", emailUsuario);
+        if (usuario.length > 0) {
+          const doc = usuario[0];
+          return doc["id"];
+        } else {
+          throw new Error('No se encontró ningún usuario con ese email');
+        }
+      } catch (error) {
+        console.error('Error al obtener el ID del usuario por email:', error);
+        throw error;
+      }
+    }
+
   /**
    * Cierra la sesión del usuario autenticado.
    * 

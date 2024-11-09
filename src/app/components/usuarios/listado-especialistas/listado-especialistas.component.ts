@@ -4,6 +4,7 @@ import { Usuario } from '../../../models/usuarios.interface';
 import { FirestoreService } from '../../../services/firestore.service';
 import { StorageService } from '../../../services/storage.service';
 import { MensajesService } from '../../../services/mensajes.service';
+import { Especialista } from '../../../models/especialista.interface';
 
 @Component({
   selector: 'listado-especialistas',
@@ -21,6 +22,7 @@ export class ListadoEspecialistasComponent implements OnInit {
   ngOnInit(): void {
     this._firestoreService.obtenerDocumentosPorCampo("usuarios", "rol", "especialista")
     .then(listaEspecialistas => {
+      console.log(listaEspecialistas);
       this.listaEspecialistas = listaEspecialistas;
       this.listaEspecialistas.forEach(e => {
         this._storageService.obtenerUrlImagen("fotos-perfil/especialistas", e.id)
@@ -44,5 +46,14 @@ export class ListadoEspecialistasComponent implements OnInit {
       usuario.autorizado = usuarioModificado.autorizado;
     })
     .catch(() => this._mensajesService.lanzarMensajeError("ERROR", `Hubo un error durante la activación del usuario`));
+  }
+
+  public obtenerEspecialidades(UsuarioEspecialista: Usuario) {
+    let especialidades: string = "";
+    let especialista = UsuarioEspecialista.informacion as Especialista;
+    especialista.especialidades.forEach(e => {
+      especialidades += e.nombre + ", ";
+    })
+    return especialidades.slice(0, -2);
   }
 }

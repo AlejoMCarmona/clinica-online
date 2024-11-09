@@ -14,12 +14,12 @@ export const authorizedAccessGuard: CanActivateFn = async (route, state) => {
   }
 
   // Obtén el rol esperado desde los datos de la ruta
-  const rolEsperado = route.data['rol'] as string | undefined;
+  const rolesEsperados = route.data['rol'] as string[] | undefined;
 
-  if (rolEsperado) {
+  if (rolesEsperados && rolesEsperados?.length > 0) {
     const emailUsuario = await authService.obtenerEmailUsuario();
     const usuarioRol = await authService.obtenerRolPorEmail(emailUsuario);
-    if (usuarioRol === rolEsperado) {
+    if (rolesEsperados.includes(usuarioRol)) {
       return true;
     }
     router.navigate(['acceso-no-autorizado']);

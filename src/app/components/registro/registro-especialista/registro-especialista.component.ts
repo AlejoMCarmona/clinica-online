@@ -3,7 +3,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FirestoreService } from '../../../services/firestore.service';
 import { MensajesService } from '../../../services/mensajes.service';
-import { Especialista } from '../../../models/especialista.interface';
+import { Especialista, InformacionEspecialidades } from '../../../models/especialista.interface';
 import { Usuario } from '../../../models/usuarios.interface';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
@@ -136,12 +136,22 @@ export class RegistroEspecialistaComponent implements OnInit {
         }
       }
   
+      const especialidades = this.especialidades.value as string[];
+      let informacionEspecialidades: InformacionEspecialidades[] = [];
+      especialidades.forEach(e => {
+        informacionEspecialidades.push({
+          nombre: e,
+          duracionTurno: 30,
+          informacionCompletada: false
+        });
+      });
+
       const especialista: Especialista = {
         nombre: this.nombre?.value,
         apellido: this.apellido?.value,
         edad: this.edad?.value,
         dni: this.dni?.value,
-        especialidades: this.especialidades.value
+        especialidades: informacionEspecialidades
       };
   
       const usuario: Usuario = {

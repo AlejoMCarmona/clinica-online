@@ -1,0 +1,48 @@
+<div class="container mt-4">
+    <form [formGroup]="turnoForm" (ngSubmit)="cargarTurno()">
+      <!-- Especialidad -->
+      <div class="mb-3">
+        <label for="especialidad" class="form-label">Especialidad</label>
+        <select formControlName="especialidad" id="especialidad" class="form-select" (change)="cargarEspecialistas()">
+          <option value="" disabled selected>Seleccione una especialidad</option>
+          <option *ngFor="let especialidad of especialidades" [value]="especialidad.nombre">{{ especialidad.nombre }}</option>
+        </select>
+        <div *ngIf="especialidad?.dirty && especialidad?.touched" class="text-danger">
+            <div *ngIf="especialidad?.invalid">
+              La especialidad es obligatoria.
+            </div>
+        </div>
+      </div>
+  
+      <!-- Especialista -->
+      <div class="mb-3">
+        <label for="especialista" class="form-label">Especialista</label>
+        <select formControlName="especialista" id="especialista" class="form-select" (change)="cargarTurnosEspecialista()">
+          <option disabled selected>Seleccione un especialista</option>
+          <option *ngFor="let especialista of especialistas" [value]="especialista.id">{{ especialista.informacion.nombre + ' ' + especialista.informacion.apellido  }}</option>
+        </select>
+        <div *ngIf="especialista?.dirty && especialista?.touched" class="text-danger">
+          <div *ngIf="especialista?.invalid">
+            El especialista es obligatorio.
+          </div>
+        </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="dia" class="form-label">Turnos</label>
+        <select formControlName="dia" id="dia" class="form-select">
+          <option value="" disabled selected>Seleccione un día</option>
+          <option *ngFor="let horario of horariosDisponibles" [ngValue]="horario" [disabled]="!horario.disponible">{{ horario.fecha + " - " + horario.hora }}</option>
+        </select>
+        <div *ngIf="dia?.touched && dia?.touched" class="text-danger">
+          <div *ngIf="dia?.invalid">
+            El turno es obligatorio.
+          </div>
+        </div>
+      </div>
+  
+      <!-- Botón de Enviar -->
+      <button type="submit" class="btn btn-primary w-100" [disabled]="turnoForm.invalid">Solicitar Turno</button>
+    </form>
+  </div>
+  

@@ -1,10 +1,13 @@
 .card-clickeable {
     cursor: pointer;
-    width: 18rem !important; 
+    width: 12rem !important; 
+}
+.card-clickeable:hover {
+    background-color: rgb(192, 192, 192);
 }
 
 i {
-    font-size: 8rem;
+    font-size: 6rem;
 }
 
 .home-background {

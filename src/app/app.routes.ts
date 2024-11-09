@@ -6,5 +6,6 @@ export const routes: Routes = [
     { path: 'home', loadComponent: () => import('./pages/home/home-page.component').then(m => m.HomePageComponent) },
     { path: 'registro', loadComponent: () => import('./pages/registro/registro-page.component').then(m => m.RegistroPageComponent) },
     { path: 'login', loadComponent: () => import('./pages/login/login-page.component').then(m => m.LoginPageComponent) },
-    { path: 'usuarios', loadComponent: () => import('./pages/usuarios/usuarios-page.component').then(m => m.UsuariosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: 'admin' } }
+    { path: 'usuarios', loadComponent: () => import('./pages/usuarios/usuarios-page.component').then(m => m.UsuariosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin'] } },
+    { path: 'nuevo-turno', loadComponent: () => import('./pages/nuevo-turno/nuevo-turno-page.component').then(m => m.NuevoTurnoPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin', 'paciente'] } }
 ];

@@ -14,9 +14,9 @@
             </p>
         </div>
 
-        <div class="row d-flex flex-column" *ngIf="estaLogueado">
-            <div class="col d-flex justify-content-center mb-3">
-                <div class="card card-clickeable" *ngIf="rol == 'admin'" routerLink="/usuarios">
+        <div class="row d-flex flex-row" *ngIf="estaLogueado">
+            <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'admin'">
+                <div class="card card-clickeable" routerLink="/usuarios">
                     <i class="bi bi-person-bounding-box mx-auto"></i>
                     <div class="card-body">
                         <h5 class="card-title">Usuarios</h5>
@@ -24,17 +24,27 @@
                     </div>
                 </div>
             </div>
-            <div class="col d-flex justify-content-center mb-3">
-                <div class="card card-clickeable" *ngIf="rol == 'paciente' || rol == 'especialista'" routerLink="turnos">
+            <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'paciente' || rol == 'especialista'">
+                <div class="card card-clickeable" routerLink="turnos">
                     <i class="bi bi-calendar-plus mx-auto"></i>
                     <div class="card-body">
-                        <h5 class="card-title">Turnos</h5>
-                        <p class="card-text">Gestiona tus turnos.</p>
+                        <h5 class="card-title">Mis turnos</h5>
+                        <p class="card-text fs-6">Gestiona tus turnos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'paciente' || rol == 'especialista'">
+                <div class="card card-clickeable" routerLink="/nuevo-turno">
+                    <i class="bi bi-calendar-plus mx-auto"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Nuevo turno</h5>
+                        <p class="card-text">Solicita un nuevo turno.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
     <div class="row justify-content-evenly" *ngIf="!estaLogueado">
         <div class="card col-lg-5 col-12 mb-2">
             <div class="card-body">
