@@ -162,7 +162,7 @@ export class AuthService {
     }
   }
 
-    /**
+  /**
    * Busca en Firestore el rol asociado al usuario con el email dado.
    * 
    * @param email - Email del usuario para buscar su rol.
@@ -182,6 +182,26 @@ export class AuthService {
         throw error;
       }
     }
+
+    
+  /**
+   * Busca en Firestore el rol asociado al usuario con el email dado.
+   * 
+   * @param email - Email del usuario para buscar su rol.
+   * @returns Promise que resuelve el rol del usuario o lanza un error si no se encuentra.
+   */
+  public async obtenerRol() {
+    try {
+      const email = this.usuarioAutenticado.getValue();
+      const usuario: any[] = await this._fire.obtenerDocumentosPorCampo("usuarios", "email", email);
+      if (usuario.length > 0) {
+        const doc = usuario[0];
+        return doc["rol"];
+      }
+    } catch (error) {
+      console.error('Error al obtener el rol del usuario por email:', error);
+    }
+  }
 
   /**
    * Cierra la sesión del usuario autenticado.

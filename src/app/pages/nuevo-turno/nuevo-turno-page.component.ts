@@ -21,21 +21,32 @@ export class NuevoTurnoPageComponent {
   public turnoForm!: FormGroup;
   public especialidades: Especialidad[] = [];
   public especialistas: Usuario[] = [];
+  public pacientes!: Usuario[];
+
   public diasDisponibles: string[] = [];
   public horariosDisponibles: any[] = [];
   public turnosEspecialista: Turno[] = [];
+  public usuarioRol!: string;
 
   constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private _authService: AuthService, private _mensajesService: MensajesService, private _router: Router) {
     this.turnoForm = this.fb.group({
       especialidad: ['', Validators.required],
       especialista: ['', Validators.required],
       dia: ['', Validators.required],
+      paciente: ['']
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.generarProximos15Dias();
     this.obtenerEspecialidades();
+    this.usuarioRol = await this._authService.obtenerRol();
+    if (this.usuarioRol == "admin") {
+      this.pacientes = await this._firestoreService.obtenerDocumentosPorCampo("usuarios", "rol", "paciente");
+      // Hacer que el campo 'paciente' sea obligatorio si el usuario es admin
+      this.paciente?.setValidators(Validators.required);
+      this.paciente?.updateValueAndValidity();
+    }
   }
 
   // Getters para los campos del formulario
@@ -49,6 +60,10 @@ export class NuevoTurnoPageComponent {
 
   get dia() {
     return this.turnoForm.get('dia');
+  }
+  
+  get paciente() {
+    return this.turnoForm.get('paciente');
   }
 
   public generarProximos15Dias(): void {
@@ -176,6 +191,10 @@ export class NuevoTurnoPageComponent {
     return especialidad.horariosDisponibilidad.map(horario => horario.dia);
   }
 
+  public cargarTurnosPacientes() {
+
+  }
+
   // Método para enviar el formulario
   public async cargarTurno(): Promise<void> {
     if (!this.turnoForm.valid) {
@@ -183,7 +202,13 @@ export class NuevoTurnoPageComponent {
     }
 
     try {
-      const idPaciente = await this._authService.obtenerIdUsuario();
+      let idPaciente = "";
+      if (this.usuarioRol == "admin") {
+        idPaciente = this.paciente?.value;
+      } else {
+        idPaciente = await this._authService.obtenerIdUsuario();
+      }
+
       const nuevoTurno: Turno = {
         idEspecialista: this.especialista?.value,
         estado: "solicitado",
@@ -192,6 +217,7 @@ export class NuevoTurnoPageComponent {
         especialidad: this.especialidad?.value,
         idPaciente: idPaciente
       }
+
       await this._firestoreService.subirDocumento(nuevoTurno, "turnos");
       this._mensajesService.lanzarMensajeExitoso(":)", "¡Tu turno fue creado con éxito!");
       this._router.navigate(["home"]);
