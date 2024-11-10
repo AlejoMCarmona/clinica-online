@@ -1,0 +1,51 @@
+<div class="card-header">Mis Horarios</div>
+<div class="card-body">
+  <form *ngIf="this.disponibilidadForm" [formGroup]="disponibilidadForm" (ngSubmit)="guardarDisponibilidad()">
+    <div formArrayName="especialidades" *ngFor="let especialidad of especialidades.controls; let i = index">
+      <div [formGroupName]="i" class="mb-4">
+        <h5>{{ especialidad.value.nombre }}</h5>
+        <!-- Input para la Duración del Turno -->
+        <div class="mb-3">
+          <label for="duracionTurno" class="form-label">Duración del Turno (minutos)</label>
+          <input type="number" formControlName="duracionTurno" min="10" max="60" step="5" class="form-control"
+            placeholder="Duración en minutos">
+        </div>
+        <div formArrayName="horariosDisponibilidad" *ngFor="let horario of getHorariosDisponibilidad(i).controls; let j = index">
+          <div [formGroupName]="j" class="mb-2 row">
+            <div class="col-md-4">
+              <label class="form-label">Día:</label>
+              <select formControlName="dia" class="form-select">
+                <option *ngFor="let dia of [0, 1, 2, 3, 4, 5, 6]" [value]="dia">{{ ['Domingo', 'Lunes', 'Martes',
+                  'Miércoles', 'Jueves', 'Viernes', 'Sábado'][dia] }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Desde:</label>
+              <div class="d-flex">
+                <select formControlName="desdeHora" class="form-select me-2">
+                  <option *ngFor="let hora of getHorasDisponibles(horario.value.dia)" [value]="hora">{{ hora }}</option>
+                </select>
+                <select formControlName="desdeMinutos" class="form-select">
+                  <option *ngFor="let minuto of minutosDisponibles" [value]="minuto">{{ minuto }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Hasta:</label>
+              <div class="d-flex">
+                <select formControlName="hastaHora" class="form-select me-2">
+                  <option *ngFor="let hora of getHorasDisponibles(horario.value.dia)" [value]="hora">{{ hora }}</option>
+                </select>
+                <select formControlName="hastaMinutos" class="form-select">
+                  <option *ngFor="let minuto of minutosDisponibles" [value]="minuto">{{ minuto }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="agregarHorario(i)">Agregar Horario</button>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Disponibilidad</button>
+  </form>
+</div>

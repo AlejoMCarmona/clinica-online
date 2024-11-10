@@ -16,6 +16,9 @@
             <a class="nav-link active" routerLink="usuarios" routerLinkActive="active-route">Usuarios</a>
           </li>
           <li class="nav-item" *ngIf="estaLogueado">
+            <a href="#" class="nav-link" routerLinkActive="active-route" routerLink="mi-perfil">Mi perfil</a>
+          </li>
+          <li class="nav-item" *ngIf="estaLogueado">
             <a href="#" class="nav-link" routerLinkActive="active-route" (click)="cerrarSesion()">Cerrar sesión</a>
           </li>
         </ul>

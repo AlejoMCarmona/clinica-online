@@ -1,0 +1,24 @@
+<div class="container mt-5">
+  <!-- Información del Usuario -->
+  <div class="card mb-4 col-6 mx-auto" *ngIf="this.usuario">
+    <div class="card-header">Información del Usuario</div>
+    <div class="card-body row d-flex flex-row">
+      <div class="col-6">
+        <p><strong>Nombre:</strong> {{ usuario.informacion.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ usuario.informacion.apellido }}</p>
+        <p><strong>Email:</strong> {{ usuario.email }}</p>         
+        <p><strong>Edad:</strong> {{ usuario.informacion.edad }}</p>         
+        <p><strong>DNI:</strong> {{ usuario.informacion.dni }}</p>         
+      </div>
+      <!-- Muestra la imagen del usuario si existe -->
+      <div class="col-6 d-flex justify-content-end" *ngIf="imagenUrl">
+        <img [src]="imagenUrl" alt="Imagen de perfil" class="img-thumbnail" style="max-width: 150px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Disponibilidad Horaria del Especialista -->
+  <div *ngIf="this.usuario && this.usuario.rol == 'especialista'" class="card col-6 mx-auto">
+    <perfil-configuracion-especialista [usuario]="this.usuario"></perfil-configuracion-especialista>
+  </div>
+</div>
