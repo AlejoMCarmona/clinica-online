@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { LoginComponent } from '../../components/login/login.component';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
-import { RouterLink } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { BackgroundImageDirective } from '../../directives/background-image.directive';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ LoginComponent, CommonModule, RouterLink, BackgroundImageDirective ],
+  imports: [ CommonModule, BackgroundImageDirective, RouterLink ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })

@@ -1,0 +1,127 @@
+<div class="container col-8">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Especialidad</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let turno of listadoEstadosTurnos">
+        <td>{{ turno.especialidad }}</td>
+        <td>{{ turno.fecha }}</td>
+        <td>{{ turno.hora }}</td>
+        <td>{{ turno.estado.toUpperCase() }}</td>
+        <td>
+          <!-- CANCELAR TURNO -->
+          <button *ngIf="turno.accionesPermitidas.includes('cancelar-turno')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#modal-cancelar-turno">Cancelar Turno</button>   
+          <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('cancelado')">CANCELADO</p>
+          <!-- RECHAZAR TURNO -->
+          <button *ngIf="turno.accionesPermitidas.includes('rechazar-turno')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#modal-rechazar-turno">Rechazar turno</button>
+          <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('rechazado')">CANCELADO</p>
+          <!-- ACEPTAR TURNO -->
+          <button *ngIf="turno.accionesPermitidas.includes('aceptar-turno')" (click)="aceptarTurno(mapearATurno(turno))" class="btn btn-dark me-2">Aceptar turno</button>   
+          <!-- FINALIZAR TURNO -->
+          <button *ngIf="turno.accionesPermitidas.includes('finalizar-turno')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-dark me-2" data-bs-toggle="modal" data-bs-target="#modal-finalizar-turno">Finalizar turno</button>   
+          <!-- VER RESEÑA -->
+          <button *ngIf="turno.accionesPermitidas.includes('ver-resena')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-dark me-2" data-bs-toggle="modal" data-bs-target="#modalVerResena">Ver Reseña</button>   
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal para Cancelar Turno -->
+  <div class="modal fade" id="modal-cancelar-turno" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">CANCELAR TURNO</h1>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="motivo-cancelacion" class="col-form-label">Motivo de cancelación:</label>
+              <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoCancelacion">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="cancelarTurno()" [disabled]="!motivoCancelacion">CANCELAR TURNO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para rechazar turno -->
+  <div class="modal fade" id="modal-rechazar-turno" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">RECHAZAR TURNO</h1>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="motivo-cancelacion" class="col-form-label">Motivo de rechazo:</label>
+              <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoRechazo">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="rechazarTurno()" [disabled]="!motivoRechazo">RECHAZAR TURNO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para finalizar el turno -->
+  <div class="modal fade" id="modal-finalizar-turno" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">FINALIZAR TURNO</h1>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="diagnostico" class="col-form-label">Diagnóstico:</label>
+              <input type="text" class="form-control" id="diagnostico" name="diagnostico" [(ngModel)]="diagnostico">
+            </div>
+            <div class="mb-3">
+              <label for="comentario" class="col-form-label">Comentario:</label>
+              <input type="text" class="form-control" id="comentario" name="comentario" [(ngModel)]="comentario">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="finalizarTurno()" [disabled]="!diagnostico || !comentario">FINALIZAR TURNO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para ver reseña -->
+  <div class="modal fade" id="modalVerResena" tabindex="-1" aria-labelledby="modalVerResenaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalVerResenaLabel">Reseña del turno</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" *ngIf="this.turnoSeleccionado">
+          <p><strong>Comentario:</strong> {{ turnoSeleccionado.comentariosEspecialista?.comentario }}</p>
+          <p><strong>Diagnóstico:</strong> {{ turnoSeleccionado.comentariosEspecialista?.diagnostico || 'Sin diagnóstico' }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

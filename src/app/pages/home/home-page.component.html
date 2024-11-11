@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'paciente' || rol == 'especialista'">
-                <div class="card card-clickeable" routerLink="turnos">
+                <div class="card card-clickeable" routerLink="/mis-turnos">
                     <i class="bi bi-calendar-plus mx-auto"></i>
                     <div class="card-body">
                         <h5 class="card-title">Mis turnos</h5>
@@ -65,13 +65,19 @@
             </div>
         </div>
         <div class="card col-5 p-0">
-            <div class="card-body">
-                <h5 class="card-title mb-3">¿Tienes una cuenta?</h5>
-                <p class="card-text">
-                    ¡Inicia sesión ahora mismo para poder acceder a todas las funcionalidades!
-                </p>
-                <a href="/login" class="btn btn-dark w-100">Inicia sesión aquí</a>
-            </div>
+            <div class="card-body d-flex flex-column justify-content-between text-start h-100">
+                <div>
+                    <h5 class="card-title mb-3">¿Tienes una cuenta?</h5>
+                    <p class="card-text">¡Inicia sesión ahora para acceder a todas nuestras funcionalidades exclusivas! Consulta y gestiona tus turnos, revisa el historial médico y recibe recordatorios personalizados.
+                    </p>
+                    <p class="card-text">Accede también a recomendaciones de especialistas y mantente al tanto de todas las actualizaciones importantes.</p>
+                </div>        
+                <!-- Elementos al fondo de la tarjeta -->
+                <div class="mt-auto">
+                    <small class="text-muted">Tu seguridad es nuestra prioridad: todos tus datos están protegidos.</small>
+                    <a href="/login" class="btn btn-dark w-100 my-2">Inicia sesión aquí</a>
+                </div>
+            </div>          
         </div>
     </div>
 </div>

@@ -8,5 +8,6 @@ export const routes: Routes = [
     { path: 'login', loadComponent: () => import('./pages/login/login-page.component').then(m => m.LoginPageComponent) },
     { path: 'usuarios', loadComponent: () => import('./pages/usuarios/usuarios-page.component').then(m => m.UsuariosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin'] } },
     { path: 'nuevo-turno', loadComponent: () => import('./pages/nuevo-turno/nuevo-turno-page.component').then(m => m.NuevoTurnoPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin', 'paciente'] } },
-    { path: 'mi-perfil', loadComponent: () => import('./pages/mi-perfil/mi-perfil-page.component').then(m => m.MiPerfilPageComponent), canActivate: [ authorizedAccessGuard ] }
+    { path: 'mi-perfil', loadComponent: () => import('./pages/mi-perfil/mi-perfil-page.component').then(m => m.MiPerfilPageComponent), canActivate: [ authorizedAccessGuard ] },
+    { path: 'mis-turnos', loadComponent: () => import('./pages/mis-turnos/mis-turnos-page.component').then(m => m.MisTurnosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['especialista', 'paciente'] } }
 ];
