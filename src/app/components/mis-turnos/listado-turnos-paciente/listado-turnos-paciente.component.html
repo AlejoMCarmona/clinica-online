@@ -1,5 +1,5 @@
 <div class="container col-9">
-  <filtro-turnos [turnosIniciales]="this.listadoEstadosTurnosInicial" (turnosFiltrados)="obtenerFiltro($event)"></filtro-turnos>
+  <filtro-turnos [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos>
   <table class="table">
     <thead>
       <tr>
@@ -11,7 +11,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let turno of listadoEstadosTurnos">
+      <tr *ngFor="let turno of turnosFiltrados">
         <td>{{ turno.especialidad }}</td>
         <td>{{ turno.fecha }}</td>
         <td>{{ turno.hora }}</td>
@@ -23,9 +23,9 @@
           <!-- VER RESEÑA -->
           <button *ngIf="turno.accionesPermitidas.includes('ver-resena')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-dark me-2" data-bs-toggle="modal" data-bs-target="#modalVerResena">Ver Reseña</button>          
           <!-- COMPLETAR ENCUESTA -->
-          <button *ngIf="analizarEstado(turno).includes('completar-encuesta')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#modal-completar-encuesta">Completar Encuesta</button>
+          <button *ngIf="obtenerAccionesPermitidas(turno).includes('completar-encuesta')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#modal-completar-encuesta">Completar Encuesta</button>
           <!-- CALIFICAR ATENCIÓN -->
-          <button *ngIf="analizarEstado(turno).includes('calificar-atencion')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#modal-calificar-atencion">Calificar Atención</button>
+          <button *ngIf="obtenerAccionesPermitidas(turno).includes('calificar-atencion')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#modal-calificar-atencion">Calificar Atención</button>
         </td>
       </tr>
     </tbody>
@@ -160,5 +160,4 @@
       </div>
     </div>
   </div>
-
 </div>

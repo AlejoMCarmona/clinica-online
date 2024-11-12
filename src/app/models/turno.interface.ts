@@ -5,7 +5,7 @@ export interface Turno {
   especialidad: string;
   fecha: string;
   hora: string;
-  estado: 'solicitado' | 'aceptado' | 'rechazado' | 'cancelado' | 'realizado';
+  estado: EstadoTurno;
   motivoEstado?: string;
   comentariosEspecialista?: {
     comentario?: string;               // Comentario/Reseña del especialista luego de finalizar el turno
@@ -24,3 +24,5 @@ export interface EncuestaPaciente {
   conformidad?: boolean;             // ¿Conforme con la atencion?
   recomendacion?: string;            // ¿Quieres dejar una recomendacion?
 }
+
+export type EstadoTurno = 'solicitado' | 'aceptado' | 'rechazado' | 'cancelado' | 'realizado';

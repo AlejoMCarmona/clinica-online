@@ -10,7 +10,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let turno of listadoEstadosTurnos">
+      <tr *ngFor="let turno of listadoTurnosConAcciones">
         <td>{{ turno.especialidad }}</td>
         <td>{{ turno.fecha }}</td>
         <td>{{ turno.hora }}</td>
@@ -44,13 +44,13 @@
           <form>
             <div class="mb-3">
               <label for="motivo-cancelacion" class="col-form-label">Motivo de cancelación:</label>
-              <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoCancelacion">
+              <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoEstado">
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="cancelarTurno()" [disabled]="!motivoCancelacion">CANCELAR TURNO</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="cancelarTurno()" [disabled]="!motivoEstado">CANCELAR TURNO</button>
         </div>
       </div>
     </div>
@@ -67,13 +67,13 @@
           <form>
             <div class="mb-3">
               <label for="motivo-cancelacion" class="col-form-label">Motivo de rechazo:</label>
-              <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoRechazo">
+              <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoEstado">
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="rechazarTurno()" [disabled]="!motivoRechazo">RECHAZAR TURNO</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="rechazarTurno()" [disabled]="!motivoEstado">RECHAZAR TURNO</button>
         </div>
       </div>
     </div>

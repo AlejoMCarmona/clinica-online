@@ -2,10 +2,11 @@ import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
 import { AuthService } from '../../../services/auth.service';
 import { MensajesService } from '../../../services/mensajes.service';
-import { Turno } from '../../../models/turno.interface';
+import { EstadoTurno, Turno } from '../../../models/turno.interface';
 import { Usuario } from '../../../models/usuarios.interface';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
 
 @Component({
   selector: 'listado-turnos-especialista',
@@ -18,30 +19,30 @@ import { FormsModule } from '@angular/forms';
 export class ListadoTurnosEspecialistaComponent {
   @Input() usuario!: Usuario;
   public turnoSeleccionado!: Turno;
-  public motivoCancelacion!: string;
-  public motivoRechazo!: string;
+  public motivoEstado!: string;
   public diagnostico!: string;
   public comentario!: string;
-  public listadoEstadosTurnos: any[] = [];
+  public listadoTurnosConAcciones: TurnoConAcciones[] = [];
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
     const listadoTurnos: Turno[] = await this._firestoreService.obtenerDocumentosPorCampo("turnos", "idEspecialista", this.usuario.id!);
     listadoTurnos.forEach(t => {
-     this.listadoEstadosTurnos.push(this.cargarEstadosTurnos(t));
+     this.listadoTurnosConAcciones.push(this.cargarAccionesPermitidasAlTurno(t));
     })
   }
 
-  private cargarEstadosTurnos(turno: Turno) {
-    const accionesPermitidas = this.analizarEstado(turno);
-    return {
+  private cargarAccionesPermitidasAlTurno(turno: Turno): TurnoConAcciones {
+    const accionesPermitidas = this.obtenerAccionesPermitidas(turno);
+    const turnoConAcciones: TurnoConAcciones = {
       ...turno,
       accionesPermitidas: accionesPermitidas
     }
+    return turnoConAcciones;
   }
 
-  public analizarEstado(turno: Turno): string[] {
+  public obtenerAccionesPermitidas(turno: Turno): string[] {
     const acciones = [];
   
     switch (turno.estado) {
@@ -61,37 +62,46 @@ export class ListadoTurnosEspecialistaComponent {
     return acciones;
   }
 
-  public actualizarEstadoTurno(turno: any, nuevoEstado: string, motivo?: string): void {
+  public actualizarTurnoEnListado(turno: Turno, nuevoEstado: EstadoTurno, motivo?: string): void {
     turno.estado = nuevoEstado;
     if (motivo) {
       turno.motivoEstado = motivo;
     }
 
-    // Actualizamos las acciones permitidas según el nuevo estado
-    turno.accionesPermitidas = this.analizarEstado(turno);
+    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
 
-    // Actualizamos el listado con el nuevo estado y acciones
-    this.listadoEstadosTurnos = this.listadoEstadosTurnos.map(t =>
-      t.id === turno.id ? { ...t, estado: nuevoEstado, motivoEstado: motivo || t.motivoEstado, accionesPermitidas: turno.accionesPermitidas } : t
-    );
+    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
+    this.listadoTurnosConAcciones.forEach(t => {
+      if (t.id === turno.id) {
+        t.estado = nuevoEstado;
+        t.motivoEstado = motivo || t.motivoEstado;
+        t.accionesPermitidas = accionesPermitidas;
+      }
+    });
 
     // Forzamos la actualización de la vista
     this.cdr.detectChanges();
   }
 
-  public mapearATurno(turnoConAcciones: any): Turno {
+  public mapearATurno(turnoConAcciones: TurnoConAcciones): Turno {
     const { accionesPermitidas, ...turnoOriginal } = turnoConAcciones;
     return turnoOriginal as Turno;
   }
 
+  // ACCIONES DE LOS TURNOS:
   public async cancelarTurno() {
     try {
+      // Aplico los cambios necesarios en el turno
       this.turnoSeleccionado.estado = "cancelado";
-      this.turnoSeleccionado.motivoEstado = this.motivoCancelacion;
-      const { id, ...turnoModificado } = this.turnoSeleccionado;
-      await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
-      this.actualizarEstadoTurno(this.turnoSeleccionado, 'cancelado', this.motivoCancelacion);
+      this.turnoSeleccionado.motivoEstado = this.motivoEstado;
+      // Hago la modificación en base de datos
+      const { id, ...turnoCancelado} = this.turnoSeleccionado;
+      await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoCancelado);
+      // Actualizo su estado en el listado de turnos
+      this.actualizarTurnoEnListado(this.turnoSeleccionado, 'cancelado', this.motivoEstado);
+      // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue cancelado");
+      this.motivoEstado = "";
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer cancelar el turno");
     }
@@ -99,10 +109,14 @@ export class ListadoTurnosEspecialistaComponent {
 
   public async aceptarTurno(turno: Turno) {
     try {
+      // Aplico los cambios necesarios en el turno
       turno.estado = "aceptado";
-      const { id, ...turnoModificado } = turno;
-      await this._firestoreService.modificarDocumento("turnos", turno.id || "", turnoModificado);
-      this.actualizarEstadoTurno(turno, 'aceptado');
+      // Hago la modificación en base de datos
+      const { id, ...turnoAceptado } = turno;
+      await this._firestoreService.modificarDocumento("turnos", turno.id || "", turnoAceptado);
+      // Actualizo su estado en el listado de turnos
+      this.actualizarTurnoEnListado(turno, 'aceptado');
+      // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue aceptado");
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer aceptar el turno");
@@ -111,13 +125,17 @@ export class ListadoTurnosEspecialistaComponent {
 
   public async finalizarTurno() {
     try {
+      // Aplico los cambios necesarios en el turno
       this.turnoSeleccionado.estado = "realizado";
       if (!this.turnoSeleccionado.comentariosEspecialista) this.turnoSeleccionado.comentariosEspecialista = {}; 
       this.turnoSeleccionado.comentariosEspecialista.comentario = this.comentario;
       this.turnoSeleccionado.comentariosEspecialista.diagnostico = this.diagnostico;
-      const { id, ...turnoModificado } = this.turnoSeleccionado;
-      await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
-      this.actualizarEstadoTurno(this.turnoSeleccionado, 'realizado');
+      // Hago la modificación en base de datos
+      const { id, ...turnoFinalizado } = this.turnoSeleccionado;
+      await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoFinalizado);
+      // Actualizo su estado en el listado de turnos
+      this.actualizarTurnoEnListado(this.turnoSeleccionado, 'realizado');
+      // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue realizado");
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
@@ -126,12 +144,17 @@ export class ListadoTurnosEspecialistaComponent {
 
   public async rechazarTurno() {
     try {
+      // Aplico los cambios necesarios en el turno
       this.turnoSeleccionado.estado = "rechazado";
-      this.turnoSeleccionado.motivoEstado = this.motivoRechazo;
+      this.turnoSeleccionado.motivoEstado = this.motivoEstado;
+      // Hago la modificación en base de datos
       const { id, ...turnoModificado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
-      this.actualizarEstadoTurno(this.turnoSeleccionado, 'rechazado', this.motivoRechazo);
+      // Actualizo su estado en el listado de turnos
+      this.actualizarTurnoEnListado(this.turnoSeleccionado, 'rechazado', this.motivoEstado);
+      // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue rechazado");
+      this.motivoEstado = "";
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
     }
