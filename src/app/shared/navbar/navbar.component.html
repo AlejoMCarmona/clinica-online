@@ -12,8 +12,11 @@
           <li class="nav-item" *ngIf="estaLogueado && rol == 'paciente' || rol == 'especialista'">
             <a class="nav-link active" routerLink="mis-turnos" routerLinkActive="active-route">Mis turnos</a>
           </li>
-          <li class="nav-item" *ngIf="estaLogueado && rol == 'paciente'">
+          <li class="nav-item" *ngIf="estaLogueado && rol == 'paciente' || rol == 'admin'">
             <a class="nav-link active" routerLink="nuevo-turno" routerLinkActive="active-route">Nuevo turno</a>
+          </li>
+          <li class="nav-item" *ngIf="estaLogueado && rol == 'admin'">
+            <a class="nav-link active" routerLink="/turnos" routerLinkActive="active-route">Turnos</a>
           </li>
           <li class="nav-item" *ngIf="estaLogueado && rol == 'admin'">
             <a class="nav-link active" routerLink="usuarios" routerLinkActive="active-route">Usuarios</a>

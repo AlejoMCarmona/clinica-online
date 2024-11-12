@@ -42,6 +42,15 @@
                     </div>
                 </div>
             </div>
+            <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'admin'">
+                <div class="card card-clickeable" routerLink="/turnos">
+                    <i class="bi bi-calendar-plus mx-auto"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Turnos</h5>
+                        <p class="card-text">Observa todos los turnos de la clínica.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

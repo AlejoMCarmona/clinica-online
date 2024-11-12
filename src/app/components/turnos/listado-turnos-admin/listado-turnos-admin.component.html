@@ -1,0 +1,59 @@
+<div class="container col-12">
+    <filtro-turnos-paciente [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos-paciente>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Especialidad</th>
+          <th>Especialista</th>
+          <th>Paciente</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let turno of turnosFiltrados">
+          <td>{{ turno.especialidad }}</td>
+          <td>{{ turno.nombreEspecialista }}</td>
+          <td>{{ turno.nombrePaciente }}</td>
+          <td>{{ turno.fecha }}</td>
+          <td>{{ turno.hora }}</td>
+          <td>{{ turno.estado.toUpperCase() }}</td>
+          <td>
+            <!-- CANCELAR TURNO -->
+            <button *ngIf="turno.accionesPermitidas.includes('cancelar-turno')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#modal-cancelar-turno">Cancelar Turno</button>
+            <!-- CANCELADO -->
+            <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('cancelado')">CANCELADO</p>
+            <!-- REALIZADO -->
+            <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('realizado')">REALIZADO</p>
+            <!-- RECHAZADO -->
+            <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('rechazado')">RECHAZADO</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Modal para Cancelar Turno -->
+    <div class="modal fade" id="modal-cancelar-turno" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5">CANCELAR TURNO</h1>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="motivo-cancelacion" class="col-form-label">Motivo de cancelación:</label>
+                <input type="text" class="form-control" id="motivo-cancelacion" name="motivo-cancelacion" [(ngModel)]="motivoCancelacion">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="cancelarTurno()" [disabled]="!motivoCancelacion">CANCELAR TURNO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
