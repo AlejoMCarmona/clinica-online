@@ -1,4 +1,7 @@
 <div class="container mt-4">
+  <h1 class="text-center text-title text-uppercase">NUEVO TURNO</h1>
+
+  <div class="col-6 border p-4 mx-auto">
     <form [formGroup]="turnoForm" (ngSubmit)="cargarTurno()">
       <!-- Especialidad -->
       <div class="mb-3">
@@ -40,7 +43,7 @@
           </div>
         </div>
       </div>
-
+  
       <div class="mb-3" *ngIf="this.usuarioRol == 'admin'">
         <label for="paciente" class="form-label">Paciente</label>
         <select formControlName="paciente" id="paciente" class="form-select" (change)="cargarTurnosPacientes()">
@@ -55,7 +58,7 @@
       </div>
   
       <!-- Botón de Enviar -->
-      <button type="submit" class="btn btn-primary w-100" [disabled]="this.turnoForm.invalid">Solicitar Turno</button>
+      <button type="submit" class="btn btn-dark w-100" [disabled]="this.turnoForm.invalid">Solicitar Turno</button>
     </form>
   </div>
-  
+</div>

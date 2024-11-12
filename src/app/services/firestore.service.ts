@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDocs, or, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, writeBatch } from '@angular/fire/firestore';
+import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, writeBatch } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +66,18 @@ export class FirestoreService {
     });
 
     return data;
+  }
+
+  public async obtenerDocumentosPorID(nombreColeccion: string, id: string) {
+    const docRef = doc(this._firestore, nombreColeccion, id);
+    const docSnap = await getDoc(docRef);
+    const dataDocumento = docSnap.data();
+    if (!dataDocumento) return;
+    const documento = {
+      ...dataDocumento,
+      id: id
+    }
+    return documento;
   }
 
   /**

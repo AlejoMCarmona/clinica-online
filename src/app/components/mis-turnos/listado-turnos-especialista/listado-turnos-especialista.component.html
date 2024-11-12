@@ -1,8 +1,10 @@
-<div class="container col-8">
+<div class="container col-10">
+  <filtro-turnos-especialista [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos-especialista>
   <table class="table">
     <thead>
       <tr>
         <th>Especialidad</th>
+        <th>Paciente</th>
         <th>Fecha</th>
         <th>Hora</th>
         <th>Estado</th>
@@ -10,8 +12,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let turno of listadoTurnosConAcciones">
+      <tr *ngFor="let turno of turnosFiltrados">
         <td>{{ turno.especialidad }}</td>
+        <td>{{ turno.nombrePaciente }}</td>
         <td>{{ turno.fecha }}</td>
         <td>{{ turno.hora }}</td>
         <td>{{ turno.estado.toUpperCase() }}</td>
@@ -21,7 +24,7 @@
           <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('cancelado')">CANCELADO</p>
           <!-- RECHAZAR TURNO -->
           <button *ngIf="turno.accionesPermitidas.includes('rechazar-turno')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#modal-rechazar-turno">Rechazar turno</button>
-          <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('rechazado')">CANCELADO</p>
+          <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('rechazado')">RECHAZADO</p>
           <!-- ACEPTAR TURNO -->
           <button *ngIf="turno.accionesPermitidas.includes('aceptar-turno')" (click)="aceptarTurno(mapearATurno(turno))" class="btn btn-dark me-2">Aceptar turno</button>   
           <!-- FINALIZAR TURNO -->
@@ -115,7 +118,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" *ngIf="this.turnoSeleccionado">
-          <p><strong>Comentario:</strong> {{ turnoSeleccionado.comentariosEspecialista?.comentario }}</p>
+          <p><strong>Comentario:</strong> {{ turnoSeleccionado.comentariosEspecialista?.comentario || 'Sin comentario' }}</p>
           <p><strong>Diagnóstico:</strong> {{ turnoSeleccionado.comentariosEspecialista?.diagnostico || 'Sin diagnóstico' }}</p>
         </div>
         <div class="modal-footer">

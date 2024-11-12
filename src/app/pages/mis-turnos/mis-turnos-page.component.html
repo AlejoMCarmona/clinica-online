@@ -1,5 +1,5 @@
 <div class="container">
-    <h1 class="text-center text-title">Mis turnos</h1>
+    <h1 class="text-center text-title text-uppercase">Mis turnos</h1>
     <div class="row">
         <div class="col" *ngIf="this.usuario">
             <listado-turnos-paciente *ngIf="this.usuario.rol == 'paciente'" [usuario]="this.usuario"></listado-turnos-paciente>

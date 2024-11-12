@@ -1,9 +1,10 @@
-<div class="container col-9">
-  <filtro-turnos [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos>
+<div class="container col-10">
+  <filtro-turnos-paciente [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos-paciente>
   <table class="table">
     <thead>
       <tr>
         <th>Especialidad</th>
+        <th>Especialista</th>
         <th>Fecha</th>
         <th>Hora</th>
         <th>Estado</th>
@@ -13,6 +14,7 @@
     <tbody>
       <tr *ngFor="let turno of turnosFiltrados">
         <td>{{ turno.especialidad }}</td>
+        <td>{{ turno.nombreEspecialista }}</td>
         <td>{{ turno.fecha }}</td>
         <td>{{ turno.hora }}</td>
         <td>{{ turno.estado.toUpperCase() }}</td>
@@ -26,6 +28,7 @@
           <button *ngIf="obtenerAccionesPermitidas(turno).includes('completar-encuesta')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#modal-completar-encuesta">Completar Encuesta</button>
           <!-- CALIFICAR ATENCIÓN -->
           <button *ngIf="obtenerAccionesPermitidas(turno).includes('calificar-atencion')" (click)="this.turnoSeleccionado = mapearATurno(turno)" class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#modal-calificar-atencion">Calificar Atención</button>
+          <p class="text-danger p-0 m-0" *ngIf="turno.accionesPermitidas.includes('rechazado')">RECHAZADO</p>
         </td>
       </tr>
     </tbody>

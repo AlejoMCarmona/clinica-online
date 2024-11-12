@@ -7,11 +7,12 @@ import { Usuario } from '../../../models/usuarios.interface';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
+import { FiltroTurnosEspecialistaComponent } from '../filtro-turnos-especialista/filtro-turnos-especialista.component';
 
 @Component({
   selector: 'listado-turnos-especialista',
   standalone: true,
-  imports: [ CommonModule, FormsModule ],
+  imports: [ CommonModule, FormsModule, FiltroTurnosEspecialistaComponent ],
   templateUrl: './listado-turnos-especialista.component.html',
   styleUrl: './listado-turnos-especialista.component.css'
 })
@@ -23,6 +24,7 @@ export class ListadoTurnosEspecialistaComponent {
   public diagnostico!: string;
   public comentario!: string;
   public listadoTurnosConAcciones: TurnoConAcciones[] = [];
+  public turnosFiltrados: TurnoConAcciones[] = [];
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
@@ -30,7 +32,8 @@ export class ListadoTurnosEspecialistaComponent {
     const listadoTurnos: Turno[] = await this._firestoreService.obtenerDocumentosPorCampo("turnos", "idEspecialista", this.usuario.id!);
     listadoTurnos.forEach(t => {
      this.listadoTurnosConAcciones.push(this.cargarAccionesPermitidasAlTurno(t));
-    })
+    });
+    this.turnosFiltrados = [...this.listadoTurnosConAcciones];
   }
 
   private cargarAccionesPermitidasAlTurno(turno: Turno): TurnoConAcciones {
@@ -57,24 +60,43 @@ export class ListadoTurnosEspecialistaComponent {
           acciones.push('ver-resena');
         }
         break;
+      case 'cancelado':
+        acciones.push('cancelado');
+        break;
+      case 'rechazado':
+        acciones.push('rechazado');
+        break;
     }
   
     return acciones;
   }
 
-  public actualizarTurnoEnListado(turno: Turno, nuevoEstado: EstadoTurno, motivo?: string): void {
-    turno.estado = nuevoEstado;
-    if (motivo) {
-      turno.motivoEstado = motivo;
-    }
-
+  public actualizarTurnoEnListado(turno: Turno): void {
     const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
 
     // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
     this.listadoTurnosConAcciones.forEach(t => {
       if (t.id === turno.id) {
-        t.estado = nuevoEstado;
-        t.motivoEstado = motivo || t.motivoEstado;
+        t.estado = turno.estado;
+        t.motivoEstado = turno.motivoEstado || t.motivoEstado;
+        t.accionesPermitidas = accionesPermitidas;
+      }
+    });
+
+    // Forzamos la actualización de la vista
+    this.cdr.detectChanges();
+  }
+
+  public actualizarTurnoFinalizadoEnListado(turno: Turno): void {
+    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
+
+    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
+    this.listadoTurnosConAcciones.forEach(t => {
+      if (t.id === turno.id) {
+        t.estado = 'realizado';
+        if (!t.comentariosEspecialista) t.comentariosEspecialista = {};
+        t.comentariosEspecialista.comentario = turno.comentariosEspecialista?.comentario;
+        t.comentariosEspecialista.diagnostico = turno.comentariosEspecialista?.diagnostico
         t.accionesPermitidas = accionesPermitidas;
       }
     });
@@ -98,7 +120,7 @@ export class ListadoTurnosEspecialistaComponent {
       const { id, ...turnoCancelado} = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoCancelado);
       // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(this.turnoSeleccionado, 'cancelado', this.motivoEstado);
+      this.actualizarTurnoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue cancelado");
       this.motivoEstado = "";
@@ -115,7 +137,7 @@ export class ListadoTurnosEspecialistaComponent {
       const { id, ...turnoAceptado } = turno;
       await this._firestoreService.modificarDocumento("turnos", turno.id || "", turnoAceptado);
       // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(turno, 'aceptado');
+      this.actualizarTurnoEnListado(turno);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue aceptado");
     } catch (error) {
@@ -134,12 +156,12 @@ export class ListadoTurnosEspecialistaComponent {
       const { id, ...turnoFinalizado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoFinalizado);
       // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(this.turnoSeleccionado, 'realizado');
+      this.actualizarTurnoFinalizadoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue realizado");
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
-    }  
+    }
   }
 
   public async rechazarTurno() {
@@ -151,7 +173,7 @@ export class ListadoTurnosEspecialistaComponent {
       const { id, ...turnoModificado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
       // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(this.turnoSeleccionado, 'rechazado', this.motivoEstado);
+      this.actualizarTurnoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue rechazado");
       this.motivoEstado = "";

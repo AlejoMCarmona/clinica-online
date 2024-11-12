@@ -3,7 +3,9 @@ import { EstadoTurno } from "../../../models/turno.interface";
 export interface TurnoConAcciones {
     id?: string;
     idPaciente: string;
+    nombrePaciente: string;
     idEspecialista: string;
+    nombreEspecialista: string;
     especialidad: string;
     fecha: string;
     hora: string;

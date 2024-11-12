@@ -209,13 +209,23 @@ export class NuevoTurnoPageComponent {
         idPaciente = await this._authService.obtenerIdUsuario();
       }
 
+      let paciente: Usuario | undefined;
+      if (this.usuarioRol == "admin") {
+        paciente = this.pacientes.find(p => p.id == idPaciente);
+      } else {
+        paciente = await this._firestoreService.obtenerDocumentosPorID("usuarios", idPaciente) as Usuario;
+      }
+      const especialista: Usuario | undefined = this.especialistas.find(e => e.id == this.especialista?.value);
+
       const nuevoTurno: Turno = {
         idEspecialista: this.especialista?.value,
+        nombreEspecialista: especialista?.informacion.nombre + " " + especialista?.informacion.apellido || "",
         estado: "solicitado",
         fecha: this.dia?.value.fecha,
         hora: this.dia?.value.hora,
         especialidad: this.especialidad?.value,
-        idPaciente: idPaciente
+        idPaciente: idPaciente,
+        nombrePaciente: paciente?.informacion.nombre + " " + paciente?.informacion.apellido || ""
       }
 
       await this._firestoreService.subirDocumento(nuevoTurno, "turnos");
@@ -223,6 +233,7 @@ export class NuevoTurnoPageComponent {
       this._router.navigate(["home"]);
     }
     catch (error) {
+      console.log(error);
       this._mensajesService.lanzarMensajeError(":)", "Hubo un error durante la creación de tu turno, reintentalo más tarde.");
     }
   }

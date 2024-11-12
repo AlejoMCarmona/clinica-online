@@ -1,7 +1,9 @@
 export interface Turno {
   id?: string;
   idPaciente: string;
+  nombrePaciente: string;
   idEspecialista: string;
+  nombreEspecialista: string;
   especialidad: string;
   fecha: string;
   hora: string;
