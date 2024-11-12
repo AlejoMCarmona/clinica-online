@@ -9,17 +9,19 @@ import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 import { Especialidad } from '../../../models/especialidades.interface';
+import { CaptchaComponent } from '../../captcha/captcha/captcha.component';
 
 @Component({
   selector: 'registro-especialista',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule, FormsModule ],
+  imports: [ CommonModule, ReactiveFormsModule, FormsModule, CaptchaComponent ],
   templateUrl: './registro-especialista.component.html',
   styleUrl: './registro-especialista.component.css'
 })
 
 export class RegistroEspecialistaComponent implements OnInit {
   public especialistaFormulario!: FormGroup;
+  public captchaValido: boolean = false;
   public listaEspecialidades: string[] = []; // Lista de especialidades que se muestra en pantalla en todo momento (incluye las nuevas agregadas)
   public listaEspecialidadesInicial: string[] = []; // Lista de especialidades iniciales (que se obtienen de la base de datos)
   public imagenSubida!: File;
@@ -121,6 +123,10 @@ export class RegistroEspecialistaComponent implements OnInit {
     try {
       if (!this.especialistaFormulario.valid) {
         this.especialistaFormulario.markAllAsTouched();
+        return;
+      }
+      if (!this.captchaValido) {
+        this.__mensajesService.lanzarMensajeError("ERROR", "Debes completar el captcha correctamente");
         return;
       }
 

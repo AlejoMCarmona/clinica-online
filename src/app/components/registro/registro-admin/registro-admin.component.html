@@ -59,7 +59,9 @@
             <div *ngIf="imagen?.invalid">La imagen de perfil es requerida.</div>
         </div>
     </div>
-    <button type="submit" class="btn btn-dark w-100">Registrar Admin</button>
+    <hr>
+    <captcha (resultadoCaptcha)="this.captchaValido = $event"></captcha>
+    <button type="submit" class="btn btn-dark w-100 mt-3">Registrar Admin</button>
 </form>
 
 <ng-template #cargando>

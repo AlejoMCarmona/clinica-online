@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 import { Usuario } from '../../../models/usuarios.interface';
 import { StorageService } from '../../../services/storage.service';
 import { CommonModule } from '@angular/common';
+import { CaptchaComponent } from '../../captcha/captcha/captcha.component';
 
 @Component({
   selector: 'registro-admin',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule ],
+  imports: [ CommonModule, ReactiveFormsModule, CaptchaComponent ],
   templateUrl: './registro-admin.component.html',
   styleUrl: './registro-admin.component.css'
 })
@@ -19,6 +20,7 @@ export class RegistroAdminComponent {
   public adminFormulario!: FormGroup;
   public imagenSubida!: File;
   public estaCargando!: boolean;
+  public captchaValido: boolean = false;
   @Output() registroCompletado = new EventEmitter<void>();
 
   constructor(private fb: FormBuilder, private __mensajesService: MensajesService, private _authService: AuthService, private _router: Router, private _storageService: StorageService) {
@@ -69,6 +71,10 @@ export class RegistroAdminComponent {
     try {
       if (!this.adminFormulario.valid) {
         this.adminFormulario.markAllAsTouched();
+        return;
+      }
+      if (!this.captchaValido) {
+        this.__mensajesService.lanzarMensajeError("ERROR", "Debes completar el captcha correctamente");
         return;
       }
 

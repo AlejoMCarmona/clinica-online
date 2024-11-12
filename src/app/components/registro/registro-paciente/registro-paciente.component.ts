@@ -7,11 +7,12 @@ import { AuthService } from '../../../services/auth.service';
 import { StorageService } from '../../../services/storage.service';
 import { MensajesService } from '../../../services/mensajes.service';
 import { Router } from '@angular/router';
+import { CaptchaComponent } from '../../captcha/captcha/captcha.component';
 
 @Component({
   selector: 'registro-paciente',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule ],
+  imports: [ CommonModule, ReactiveFormsModule, CaptchaComponent ],
   templateUrl: './registro-paciente.component.html',
   styleUrl: './registro-paciente.component.css'
 })
@@ -21,6 +22,7 @@ export class RegistroPacienteComponent {
   public imagenPerfilPrimariaSubida!: File;
   public imagenPerfilSecundariaSubida!: File;
   public estaCargando: boolean = false;
+  public captchaValido: boolean = false;
   @Output() registroCompletado = new EventEmitter<void>();
 
   constructor(private fb: FormBuilder, private _authService: AuthService, private _mensajesService: MensajesService, private _storageService: StorageService, private _router: Router) {
@@ -85,6 +87,10 @@ export class RegistroPacienteComponent {
     try {
       if (!this.pacienteFormulario.valid) {
         this.pacienteFormulario.markAllAsTouched();
+        return;
+      }
+      if (!this.captchaValido) {
+        this._mensajesService.lanzarMensajeError("ERROR", "Debes completar el captcha correctamente");
         return;
       }
   

@@ -75,7 +75,8 @@
         </div>
     </div>
     <hr>
-    <button type="submit" class="btn btn-dark w-100">Registrar paciente</button>
+    <captcha (resultadoCaptcha)="this.captchaValido = $event"></captcha>
+    <button type="submit" class="btn btn-dark w-100 mt-3">Registrar paciente</button>
 </form>
 
 <ng-template #cargando>

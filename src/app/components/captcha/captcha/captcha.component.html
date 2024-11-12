@@ -1,0 +1,25 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title text-center mb-4">Verificación CAPTCHA</h3>
+          <canvas #captchaCanvas [width]="this.canvasWidth" [height]="this.canvasHeight" class="d-block mx-auto mb-3 border rounded"></canvas>
+          <div *ngIf="!this.verificacionCaptcha">
+            <div class="form-group">
+              <label for="captchaInput">Escribe el texto del CAPTCHA</label>
+              <input type="text" id="captchaInput" class="form-control" [(ngModel)]="usuarioInput" placeholder="Ingrese el texto del CAPTCHA"/>
+            </div>    
+            <div class="d-flex justify-content-between mt-3">
+              <button type="button" class="btn btn-primary" (click)="comprobarCaptcha()">Comprobar</button>
+              <button type="button" class="btn btn-secondary" (click)="nuevoCaptcha()">Generar otro CAPTCHA</button>
+            </div>
+          </div>
+          <div *ngIf="this.verificacionCaptcha" class="col d-flex justify-content-center">
+            <i class="bi bi-check-lg fs-2 mx-auto"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
