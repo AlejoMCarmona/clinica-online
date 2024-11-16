@@ -54,3 +54,12 @@ body {
     max-height: 400px !important;
     overflow-y: auto;   
 }
+
+.tabla-interactiva {
+    max-height: 300px !important; 
+    overflow-y: auto !important;
+}
+
+.tabla-interactiva li {
+    cursor: pointer;
+}

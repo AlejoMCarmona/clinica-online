@@ -28,12 +28,12 @@ export class ListadoTurnosPacienteComponent implements OnInit {
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
+    this.encuestaPaciente = { recomendarHospital: false, recomendarEspecialista: false, conformidad: false, recomendacion: "" };
     const turnos: Turno[] = await this._firestoreService.obtenerDocumentosPorCampo("turnos", "idPaciente", this.usuario.id!);
     turnos.forEach(turno => {
       this.listadoTurnosConAcciones.push(this.cargarAccionesPermitidasAlTurno(turno));
     });
     this.turnosFiltrados = [...this.listadoTurnosConAcciones];
-    this.encuestaPaciente = { recomendarHospital: false, recomendarEspecialista: false, conformidad: false, recomendacion: "" };
   }
 
   private cargarAccionesPermitidasAlTurno(turno: Turno): TurnoConAcciones {

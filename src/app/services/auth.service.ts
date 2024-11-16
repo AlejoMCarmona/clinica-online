@@ -16,7 +16,7 @@ import { MensajesService } from './mensajes.service';
 export class AuthService {
   private usuarioAutenticado: BehaviorSubject<string> = new BehaviorSubject<string>(""); // Almacena el email del usuario autenticado
 
-  constructor(private auth: Auth, private _fire: FirestoreService) {}
+  constructor(private auth: Auth, private _fire: FirestoreService, private _mensajesService: MensajesService) {}
 
   public async iniciarSesion(email: string, password: string): Promise<string | undefined> {
     const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
@@ -62,7 +62,7 @@ export class AuthService {
           mensaje = "Hubo un error ineperado a la hora de crear el usuario. Por favor, inténtelo más tarde";
         break;
       }
-      alert("ERROR:" + mensaje);
+      this._mensajesService.lanzarMensajeError("ERROR", mensaje);
       return undefined;
     }
   }

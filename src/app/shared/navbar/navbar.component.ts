@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { distinctUntilChanged, Subscription, switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -22,13 +22,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.suscripciones.add(this.authService.obtenerEmailUsuarioObservable()
-    .subscribe(async email => {
-      if (email.length > 0) {
-        this.rol = await this.authService.obtenerRolPorEmail(email);
-        this.estaLogueado = email != "";
-        this.username = email != "" ? email.split("@")[0] : "";
-      }
-    }));
+      .pipe(
+          distinctUntilChanged(), // Solo proceder si el valor del email cambia
+          // Cancelar las llamadas anteriores si llega un nuevo valor
+          switchMap(async email => {
+            if (email.length > 0) {
+              const rol = await this.authService.obtenerRolPorEmail(email);
+              return { email, rol };
+            }
+            return { email: '', rol: '' }; // Sesión cerrada
+          })
+      )
+      .subscribe(({ email, rol }) => {
+        this.estaLogueado = email !== '';
+        this.username = email ? email.split("@")[0] : '';
+        this.rol = rol;
+      })
+    );
   };
 
   ngOnDestroy(): void {

@@ -4,6 +4,7 @@ import { Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
   selector: '[appBackgroundImageDirective]',
   standalone: true
 })
+
 export class BackgroundImageDirective implements OnInit {
   @Input('appBackgroundImageDirective') urlImagen!: string;
 

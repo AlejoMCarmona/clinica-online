@@ -5,12 +5,11 @@ import { RegistroPacienteComponent } from '../../components/registro/registro-pa
 import { RegistroEspecialistaComponent } from '../../components/registro/registro-especialista/registro-especialista.component';
 import { RegistroAdminComponent } from '../../components/registro/registro-admin/registro-admin.component';
 import { Router } from '@angular/router';
-import { BackgroundImageDirective } from '../../directives/background-image.directive';
 
 @Component({
   selector: 'registro',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule, RegistroPacienteComponent, RegistroEspecialistaComponent, RegistroAdminComponent, BackgroundImageDirective ],
+  imports: [ CommonModule, ReactiveFormsModule, RegistroPacienteComponent, RegistroEspecialistaComponent, RegistroAdminComponent ],
   templateUrl: './registro-page.component.html',
   styleUrl: './registro-page.component.css'
 })

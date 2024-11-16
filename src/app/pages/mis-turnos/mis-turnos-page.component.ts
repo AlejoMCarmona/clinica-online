@@ -20,6 +20,5 @@ export class MisTurnosPageComponent implements OnInit {
   
   async ngOnInit(): Promise<void> {
     this.usuario = await this._authService.obtenerUsuario();
-    console.log(JSON.stringify(this.usuario));
   }
 }

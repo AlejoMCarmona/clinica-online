@@ -22,7 +22,6 @@ export class ListadoEspecialistasComponent implements OnInit {
   ngOnInit(): void {
     this._firestoreService.obtenerDocumentosPorCampo("usuarios", "rol", "especialista")
     .then(listaEspecialistas => {
-      console.log(listaEspecialistas);
       this.listaEspecialistas = listaEspecialistas;
       this.listaEspecialistas.forEach(e => {
         this._storageService.obtenerUrlImagen("fotos-perfil/especialistas", e.id)

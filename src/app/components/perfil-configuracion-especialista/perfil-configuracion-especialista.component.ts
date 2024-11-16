@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular
 import { Usuario } from '../../models/usuarios.interface';
 import { Especialista, HorariosDisponibilidad, InformacionEspecialidades } from '../../models/especialista.interface';
 import { CommonModule } from '@angular/common';
+import { MensajesService } from '../../services/mensajes.service';
 
 @Component({
   selector: 'perfil-configuracion-especialista',
@@ -18,7 +19,7 @@ export class PerfilConfiguracionEspecialistaComponent implements OnInit {
   @Input() usuario!: Usuario;
   public minutosDisponibles: number[] = [0, 15, 30, 45];
 
-  constructor(private firestoreService: FirestoreService, private fb: FormBuilder) {}
+  constructor(private firestoreService: FirestoreService, private fb: FormBuilder, private mensajesService: MensajesService) {}
 
   ngOnInit(): void {
     if (this.usuario.rol === "especialista") {
@@ -118,15 +119,17 @@ export class PerfilConfiguracionEspecialistaComponent implements OnInit {
 
       try {
         await this.firestoreService.modificarDocumento('usuarios', this.usuario.id!, { informacion: especialista });
-        alert('Disponibilidad actualizada correctamente');
+        this.mensajesService.lanzarNotificacionExitoCentro('Disponibilidad actualizada correctamente');
       } catch (error) {
         console.error("Error al guardar la disponibilidad: ", error);
-        alert('Hubo un error al actualizar la disponibilidad. Intente de nuevo.');
+        this.mensajesService.lanzarNotificacionErrorCentro('Hubo un error al actualizar la disponibilidad. Intente de nuevo.');
       }
     } else {
-      alert("HORARIO INVALIDO");
-    }
-    
+      this.mensajesService.lanzarMensajeError(
+        "ERROR en la configuración",
+        "El horario de atención configurado es inválido. " + 
+        "Verifique que los días y los horarios seleccionados no se superpongan entre sí.");
+    } 
   }
 
   /**
@@ -157,39 +160,37 @@ export class PerfilConfiguracionEspecialistaComponent implements OnInit {
   * @returns {boolean} - `false` si se detecta una incompatibilidad de horarios, `true` si no hay superposiciones.
   */
   private verificarCompatibilidadHoraria(): boolean {
-  const especialidades = this.disponibilidadForm.value.especialidades;
+    const especialidades = this.disponibilidadForm.value.especialidades;
 
-  // Obtenemos un array con todos los horarios, incluyendo el día y especialidad
-  const horarios = especialidades.flatMap((especialidad: any) => 
-    especialidad.horariosDisponibilidad.map((horario: any) => ({
-      dia: parseInt(horario.dia),
-      desde: parseInt(horario.desdeHora) * 60 + parseInt(horario.desdeMinutos), // Convertir "desde" a minutos totales
-      hasta: parseInt(horario.hastaHora) * 60 + parseInt(horario.hastaMinutos), // Convertir "hasta" a minutos totales
-      especialidad: especialidad.nombre
-    }))
-  );
+    // Obtenemos un array con todos los horarios, incluyendo el día y especialidad
+    const horarios = especialidades.flatMap((especialidad: any) => 
+      especialidad.horariosDisponibilidad.map((horario: any) => ({
+        dia: parseInt(horario.dia),
+        desde: parseInt(horario.desdeHora) * 60 + parseInt(horario.desdeMinutos), // Convertir "desde" a minutos totales
+        hasta: parseInt(horario.hastaHora) * 60 + parseInt(horario.hastaMinutos), // Convertir "hasta" a minutos totales
+        especialidad: especialidad.nombre
+      }))
+    );
 
-  // Iteramos por cada horario y verificamos si se superpone con otro horario el mismo día
-  for (let i = 0; i < horarios.length; i++) {
-    for (let j = i + 1; j < horarios.length; j++) {
-      // Si los horarios son el mismo día y pertenecen a diferentes especialidades
-      if (horarios[i].dia === horarios[j].dia && horarios[i].especialidad !== horarios[j].especialidad) {
+    // Iteramos por cada horario y verificamos si se superpone con otro horario el mismo día
+    for (let i = 0; i < horarios.length; i++) {
+      for (let j = i + 1; j < horarios.length; j++) {
         const horario1 = horarios[i];
         const horario2 = horarios[j];
-
-        if (
-          (horario1.desde > horario2.desde && horario1.desde < horario2.hasta) ||
-          (horario2.desde > horario1.desde && horario2.desde < horario1.hasta) ||
-          (horario1.hasta > horario2.desde && horario1.hasta < horario2.hasta) ||
-          (horario2.hasta > horario1.desde && horario2.hasta < horario1.hasta)
-        ) {
-          return false; // Se encontró una incompatibilidad de horarios
+  
+        if (horario1.dia === horario2.dia) { //Si los horarios son del mismo día
+          // Si se solapan
+          if (
+            (horario1.desde < horario2.hasta && horario1.hasta > horario2.desde) || // Solapamiento parcial o completo
+            (horario1.desde === horario2.desde && horario1.hasta === horario2.hasta) // Solapamiento exacto
+            ) {
+            return false; // Incompatibilidad encontrada
+          }
         }
       }
     }
-  }
 
-  return true; // No se encontraron incompatibilidades de horarios
+    return true; // No se encontraron incompatibilidades de horarios
   }
   
 }

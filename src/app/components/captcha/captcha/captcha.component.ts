@@ -59,8 +59,6 @@ export class CaptchaComponent implements AfterViewInit {
   // Validar captcha
   public comprobarCaptcha() {
     const esValido = this.usuarioInput.trim() === this.textoCaptcha;
-    console.log(this.usuarioInput.trim());
-    console.log(this.textoCaptcha);
     this.verificacionCaptcha = esValido;
     this.resultadoCaptcha.emit(esValido);
     if (!esValido) {

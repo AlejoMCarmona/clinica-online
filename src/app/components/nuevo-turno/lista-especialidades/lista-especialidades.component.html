@@ -1,0 +1,7 @@
+<div class="tabla-interactiva">
+    <ul class="list-group">
+      <li *ngFor="let especialidad of listaElementos" (click)="seleccionarEspecialidad(especialidad)" class="list-group-item list-group-item-action" [class.active]="especialidad === this.especialidadSeleccionada">
+        {{ especialidad.nombre }}
+      </li>
+    </ul>
+</div>

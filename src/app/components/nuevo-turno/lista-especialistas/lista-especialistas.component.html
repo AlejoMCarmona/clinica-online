@@ -1,0 +1,9 @@
+<div class="tabla-interactiva">
+    <ul class="list-group" *ngIf="this.especialidadSeleccionada">
+      <li *ngFor="let especialista of listaElementos" (click)="seleccionarEspecialista(especialista)" class="list-group-item list-group-item-action" [class.active]="especialista === this.especialistaSeleccionado">
+        {{ especialista.informacion.nombre }} {{ especialista.informacion.apellido }}
+      </li>
+    </ul>
+    <p class="text-center" *ngIf="!this.especialidadSeleccionada">No se ha seleccionado una especialidad.</p>
+    <p class="text-center" *ngIf="this.especialidadSeleccionada && this.listaElementos.length == 0">No hay especialistas disponibles.</p>
+</div>
