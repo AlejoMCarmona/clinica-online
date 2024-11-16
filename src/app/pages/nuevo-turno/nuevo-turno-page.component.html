@@ -37,10 +37,7 @@
   
       <div class="mb-3" *ngIf="this.usuarioRol == 'admin'">
         <label for="paciente" class="form-label">Paciente</label>
-        <select formControlName="paciente" id="paciente" class="form-select">
-          <option value="" disabled selected>Seleccione un paciente</option>
-          <option *ngFor="let paciente of pacientes" [ngValue]="paciente.id">{{ paciente.informacion.nombre + " " + paciente.informacion.apellido }}</option>
-        </select>
+        <lista-pacientes (filaSeleccionada)="seleccionarPaciente($event)"></lista-pacientes>
         <div *ngIf="paciente?.touched && paciente?.touched" class="text-danger">
           <div *ngIf="paciente?.invalid">
             El paciente es obligatorio.

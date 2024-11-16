@@ -1,1 +1,13 @@
-<p>lista-pacientes works!</p>
+<div class="tabla-interactiva">
+    <ul class="list-group" *ngIf="pacientesCargados">
+      <li 
+        *ngFor="let paciente of listaElementos" 
+        (click)="seleccionarPaciente(paciente)" 
+        class="list-group-item list-group-item-action" 
+        [class.active]="paciente === this.pacienteSeleccionado">
+        {{ paciente.informacion.nombre }} {{ paciente.informacion.apellido }}
+      </li>
+    </ul>
+    <p class="text-center" *ngIf="!pacientesCargados">Cargando pacientes...</p>
+    <p class="text-center" *ngIf="pacientesCargados && listaElementos.length === 0">No hay pacientes disponibles.</p>
+</div>

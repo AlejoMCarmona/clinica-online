@@ -12,11 +12,12 @@ import { ListaEspecialidadesComponent } from '../../components/nuevo-turno/lista
 import { ListaEspecialistasComponent } from '../../components/nuevo-turno/lista-especialistas/lista-especialistas.component';
 import { ListaTurnosComponent } from '../../components/nuevo-turno/lista-turnos/lista-turnos.component';
 import { Horario } from '../../components/nuevo-turno/interfaces/horario.interface';
+import { ListaPacientesComponent } from '../../components/nuevo-turno/lista-pacientes/lista-pacientes.component';
 
 @Component({
   selector: 'app-nuevo-turno',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule, ListaEspecialidadesComponent, ListaEspecialistasComponent, ListaTurnosComponent ],
+  imports: [ CommonModule, ReactiveFormsModule, ListaEspecialidadesComponent, ListaEspecialistasComponent, ListaTurnosComponent, ListaPacientesComponent ],
   templateUrl: './nuevo-turno-page.component.html',
   styleUrl: './nuevo-turno-page.component.css'
 })
@@ -93,6 +94,10 @@ export class NuevoTurnoPageComponent {
     this.dia?.setValue(turno);
   }
 
+  public async seleccionarPaciente(paciente: any) {
+    this.paciente?.setValue(paciente);
+  }
+
   // Método para enviar el formulario
   public async cargarTurno(): Promise<void> {
     if (!this.turnoForm.valid) {
@@ -100,18 +105,12 @@ export class NuevoTurnoPageComponent {
     }
 
     try {
-      let idPaciente = "";
-      if (this.usuarioRol == "admin") {
-        idPaciente = this.paciente?.value;
-      } else {
-        idPaciente = await this._authService.obtenerIdUsuario();
-      }
-
       let paciente: Usuario | undefined;
-      if (this.usuarioRol == "admin") {
-        paciente = this.pacientes.find(p => p.id == idPaciente);
+      if (this.usuarioRol != "admin") {
+        const idUsuario = await this._authService.obtenerIdUsuario();
+        paciente = await this._firestoreService.obtenerDocumentosPorID("usuarios", idUsuario) as Usuario;
       } else {
-        paciente = await this._firestoreService.obtenerDocumentosPorID("usuarios", idPaciente) as Usuario;
+        paciente = this.paciente?.value;
       }
 
       const especialistaDelTurno: Usuario = this.especialista?.value;
@@ -124,7 +123,7 @@ export class NuevoTurnoPageComponent {
         fecha: horarioDelTurno.fecha,
         hora: horarioDelTurno.hora,
         especialidad: this.especialidad?.value,
-        idPaciente: idPaciente,
+        idPaciente: paciente?.id!,
         nombrePaciente: paciente?.informacion.nombre! + " " + paciente?.informacion.apellido!
       }
 
