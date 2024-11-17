@@ -1,0 +1,83 @@
+<!-- Modal -->
+<div class="modal modal-background fade show d-block" id="modal-finalizar-turno-historia" tabindex="-1" *ngIf="abrir" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">{{ pasoActual === 1 ? 'FINALIZAR TURNO' : 'HISTORIA CLÍNICA' }}</h1>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="pasoActual === 1">
+            <form>
+              <div class="mb-3">
+                <label for="diagnostico" class="col-form-label">Diagnóstico:</label>
+                <input type="text" class="form-control" [(ngModel)]="diagnostico" name="diagnostico"/>
+              </div>
+              <div class="mb-3">
+                <label for="comentario" class="col-form-label">Comentario:</label>
+                <input type="text" class="form-control" [(ngModel)]="comentario" name="comentario"/>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="pasoActual === 2">
+            <form [formGroup]="formularioHistoriaClinica" (ngSubmit)="finalizarTurnoYHistoria()">
+              <div class="row mb-3">
+                <div class="col-6">
+                    <label for="altura" class="form-label">Altura (cm)</label>
+                    <input type="number" id="altura" formControlName="altura" class="form-control" placeholder="Ej: 170" required />
+                    <div *ngIf="altura?.invalid && altura?.touched" class="text-danger">
+                      La altura es obligatoria.
+                    </div>
+                  </div>
+                
+                  <div class="col-6">
+                    <label for="peso" class="form-label">Peso (kg)</label>
+                    <input type="number" id="peso" formControlName="peso" class="form-control" placeholder="Ej: 70" required />
+                    <div *ngIf="peso?.invalid && peso?.touched" class="text-danger">
+                      El peso es obligatorio.
+                    </div>
+                  </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <label for="temperatura" class="form-label">Temperatura (°C)</label>
+                    <input type="number" id="temperatura" formControlName="temperatura" class="form-control" placeholder="Ej: 36.5" required />
+                    <div *ngIf="temperatura?.invalid && temperatura?.touched" class="text-danger">
+                      La temperatura es obligatoria.
+                    </div>
+                  </div>
+                
+                  <div class="col-6">
+                    <label for="presion" class="form-label">Presión arterial (mmHg)</label>
+                    <input type="text" id="presion" formControlName="presion" class="form-control" placeholder="Ej: 120/80" required />
+                    <div *ngIf="presion?.invalid && presion?.touched" class="text-danger">
+                      La presión arterial es obligatoria.
+                    </div>
+                  </div>
+            </div>          
+            <!-- Datos dinámicos -->
+            <div formArrayName="datosDinamicos">
+              <label class="form-label">Datos dinámicos (opcional, máximo 3):</label>
+              <div *ngFor="let dato of datosDinamicos.controls; let i = index" [formGroupName]="i" class="mb-3">
+                <div class="input-group">
+                  <input type="text" formControlName="clave" class="form-control" placeholder="Clave (Ej: Caries)" />
+                  <input type="text" formControlName="valor" class="form-control" placeholder="Valor (Ej: 4)" />
+                  <button type="button" class="btn btn-danger" (click)="eliminarDatoDinamico(i)">Eliminar</button>
+                </div>
+                <div *ngIf="dato.invalid && dato.touched" class="text-danger">
+                  Ambos campos son obligatorios.
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary w-50" (click)="agregarDatoDinamico()" [disabled]="datosDinamicos.length >= 3">Agregar dato dinámico</button>
+            </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" *ngIf="pasoActual === 2" (click)="retroceder()">Retroceder</button>
+          <button type="button" class="btn btn-danger" *ngIf="pasoActual === 1" [disabled]="!this.comentario || !this.diagnostico " (click)="avanzar()">Continuar</button>
+          <button type="button" class="btn btn-danger" *ngIf="pasoActual === 2" [disabled]="!formularioHistoriaClinica.valid" (click)="finalizarTurnoYHistoria()">Finalizar</button>
+        </div>
+      </div>
+    </div>
+  </div>

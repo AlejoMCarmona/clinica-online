@@ -1,18 +1,18 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
-import { AuthService } from '../../../services/auth.service';
 import { MensajesService } from '../../../services/mensajes.service';
-import { EstadoTurno, Turno } from '../../../models/turno.interface';
+import { Turno } from '../../../models/turno.interface';
 import { Usuario } from '../../../models/usuarios.interface';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
 import { FiltroTurnosEspecialistaComponent } from '../filtro-turnos-especialista/filtro-turnos-especialista.component';
+import { FinalizarTurnoComponent } from '../finalizar-turno/finalizar-turno.component';
 
 @Component({
   selector: 'listado-turnos-especialista',
   standalone: true,
-  imports: [ CommonModule, FormsModule, FiltroTurnosEspecialistaComponent ],
+  imports: [ CommonModule, FormsModule, FiltroTurnosEspecialistaComponent,FinalizarTurnoComponent ],
   templateUrl: './listado-turnos-especialista.component.html',
   styleUrl: './listado-turnos-especialista.component.css'
 })
@@ -21,10 +21,9 @@ export class ListadoTurnosEspecialistaComponent {
   @Input() usuario!: Usuario;
   public turnoSeleccionado!: Turno;
   public motivoEstado!: string;
-  public diagnostico!: string;
-  public comentario!: string;
   public listadoTurnosConAcciones: TurnoConAcciones[] = [];
   public turnosFiltrados: TurnoConAcciones[] = [];
+  public modalFinalizarTurno: boolean = false;
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
@@ -145,25 +144,7 @@ export class ListadoTurnosEspecialistaComponent {
     }
   }
 
-  public async finalizarTurno() {
-    try {
-      // Aplico los cambios necesarios en el turno
-      this.turnoSeleccionado.estado = "realizado";
-      if (!this.turnoSeleccionado.comentariosEspecialista) this.turnoSeleccionado.comentariosEspecialista = {}; 
-      this.turnoSeleccionado.comentariosEspecialista.comentario = this.comentario;
-      this.turnoSeleccionado.comentariosEspecialista.diagnostico = this.diagnostico;
-      // Hago la modificación en base de datos
-      const { id, ...turnoFinalizado } = this.turnoSeleccionado;
-      await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoFinalizado);
-      // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoFinalizadoEnListado(this.turnoSeleccionado);
-      // Envío un mensaje de éxito
-      this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue realizado");
-    } catch (error) {
-      this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
-    }
-  }
-
+  
   public async rechazarTurno() {
     try {
       // Aplico los cambios necesarios en el turno
@@ -180,5 +161,15 @@ export class ListadoTurnosEspecialistaComponent {
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
     }
+  }
+
+  // Acciones para controlar el modal de finalización
+  public abrirModalFinalizar(turno: Turno) {
+    this.turnoSeleccionado = turno;
+    this.modalFinalizarTurno = true;
+  }
+
+  public cerrarModal() {
+    this.modalFinalizarTurno = false;
   }
 }
