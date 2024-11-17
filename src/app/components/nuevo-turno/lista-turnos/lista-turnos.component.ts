@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { TablaInteractivaBase } from '../../../shared/interfaces/tabla-interactiva-base';
 import { Horario } from '../interfaces/horario.interface';
 import { Usuario } from '../../../models/usuarios.interface';
-import { Especialista } from '../../../models/especialista.interface';
+import { Especialista, InformacionEspecialidades } from '../../../models/especialista.interface';
 import { Turno } from '../../../models/turno.interface';
 import { FirestoreService } from '../../../services/firestore.service';
 import { DisableSelectionDirective } from '../../../directives/disable-selection.directive';
@@ -18,25 +18,8 @@ import { DisableSelectionDirective } from '../../../directives/disable-selection
 })
 
 export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
-  @Input() listaEspecialistas!: Usuario[];
-  private _especialista!: Usuario;
-  @Input()
-  set especialista(value: Usuario) {
-    this._especialista = value;
-    this.obtenerInformacion();
-  }
-  get especialista(): Usuario {
-    return this._especialista;
-  }
-  private _especialidad!: string;
-  @Input()
-  set especialidad(value: string) {
-    this._especialidad = value;
-    this.obtenerInformacion();
-  }
-  get especialidad(): string {
-    return this._especialidad;
-  }
+  @Input() public especialista!: Usuario;
+  @Input() public especialidad!: InformacionEspecialidades;
   public turnoSeleccionado!: Horario;
 
   constructor(private _firestoreService: FirestoreService) {
@@ -44,6 +27,9 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
   }
 
   public obtenerInformacion(): void {
+    if (!this.especialista || !this.especialidad) {
+      return;
+    }
     this.cargarTurnosEspecialista();
   }
 
@@ -55,15 +41,13 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
   public async cargarTurnosEspecialista(): Promise<void> {
     const especialista = this.especialista;
     const especialidad = this.especialidad;
-    this.listaElementos = [];  // Limpiamos la lista de turnos disponibles
 
     if (!especialista) return;
     const especialistaInformacion = especialista?.informacion as Especialista;
 
     const turnosTomados: Turno[] = await this._firestoreService.obtenerDocumentosPorCampo("turnos", "idEspecialista", especialista.id!) || [];
   
-    const informacionEspecialidadSeleccionada = especialistaInformacion.especialidades.find(es => es.nombre === especialidad);
-    if (!informacionEspecialidadSeleccionada || !informacionEspecialidadSeleccionada.horariosDisponibilidad || !informacionEspecialidadSeleccionada.duracionTurno) return;
+    if (!especialidad || !especialidad.horariosDisponibilidad || !especialidad.duracionTurno) return;
 
     // Definimos el horario de la clínica (general) y la duración del turno en minutos
     const clinicaHorarios = {
@@ -74,6 +58,7 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
     const ahora = new Date(); // Fecha actual para iniciar el cálculo
     const milisegundosEnMinuto = 60000;
   
+    this.listaElementos = [];  // Limpiamos la lista de turnos disponibles
     for (let i = 0; i < 15; i++) {  // Iteramos sobre los próximos 15 días
       const dia = new Date(ahora);
       dia.setDate(ahora.getDate() + i);
@@ -81,23 +66,23 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
       const esDiaHabil = diaActual >= 1 && diaActual <= 6; // Verificamos si el día es hábil (lunes a viernes o sábado)
       if (!esDiaHabil) continue; // Solo procesamos días hábiles
 
-      const diasQueTrabajaElEspecialista = this.obtenerDiasTrabajo(especialistaInformacion, especialidad);
+      const diasQueTrabajaElEspecialista = this.obtenerDiasTrabajo(especialistaInformacion, especialidad.nombre);
   
       if (!diasQueTrabajaElEspecialista.includes(diaActual)) continue; // Solo se calculan turnos en los días que trabaja el especialista
 
       // Obtenemos el horario del especialista en el día específico
       const horarioDia = diaActual === 6 ? clinicaHorarios.sabado : clinicaHorarios.lunesViernes; 
-      const disponibilidadDelEspecialistaEnElDia = informacionEspecialidadSeleccionada.horariosDisponibilidad.find(d => d.dia == diaActual);
+      const disponibilidadDelEspecialistaEnElDia = especialidad.horariosDisponibilidad.find(d => d.dia == diaActual);
 
       if (!disponibilidadDelEspecialistaEnElDia) continue;
 
       const inicioTrabajo = this.convertirHoraADate(dia, disponibilidadDelEspecialistaEnElDia.desde > horarioDia.desde ? disponibilidadDelEspecialistaEnElDia.desde : horarioDia.desde);
       const finTrabajo = this.convertirHoraADate(dia, disponibilidadDelEspecialistaEnElDia.hasta < horarioDia.hasta ? disponibilidadDelEspecialistaEnElDia.hasta : horarioDia.hasta);
   
-      // Generamos los turnos de media hora en media hora dentro del rango de trabajo
+      // Generamos los turnos dentro del rango de trabajo
       let turno = new Date(inicioTrabajo);
       while (turno < finTrabajo) {
-        const finTurno = new Date(turno.getTime() + informacionEspecialidadSeleccionada.duracionTurno * milisegundosEnMinuto);
+        const finTurno = new Date(turno.getTime() + especialidad.duracionTurno * milisegundosEnMinuto);
   
         // Verificamos si el turno ya fue tomado
         const turnoOcupado = turnosTomados.some(t => t.fecha === dia.toISOString().split('T')[0] && t.hora === turno.toTimeString().split(' ')[0]);
@@ -126,6 +111,12 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
     const fechaHora = new Date(fechaBase);
     fechaHora.setHours(horas, minutos, 0, 0);
     return fechaHora;
+  }
+
+  public formatearHora(horaCompleta: string): string {
+    // Separamos la hora, minutos y segundos
+    const [hora, minutos] = horaCompleta.split(':');
+    return `${hora}:${minutos}`;  // Devolvemos el formato "hh:mm"
   }
 
   private obtenerDiasTrabajo(especialista: Especialista, especialidadNombre: string): number[] {

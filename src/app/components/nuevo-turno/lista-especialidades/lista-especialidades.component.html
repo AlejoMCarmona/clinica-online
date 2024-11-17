@@ -1,7 +1,9 @@
-<div class="tabla-interactiva">
-    <ul class="list-group">
-      <li *ngFor="let especialidad of listaElementos" (click)="seleccionarEspecialidad(especialidad)" class="list-group-item list-group-item-action" [class.active]="especialidad === this.especialidadSeleccionada">
-        {{ especialidad.nombre }}
-      </li>
-    </ul>
+<div class="d-flex flex-wrap justify-content-center gap-3 mt-3">
+  <ng-container *ngFor="let especialidad of listaElementos" class="text-center position-relative">
+    <div *ngIf="especialidad.imagenUrl" (click)="seleccionarEspecialidad(especialidad)" style="cursor: pointer;">
+      <img [src]="especialidad.imagenUrl" [alt]="especialidad.nombre"  class="img-fluid rounded-circle especialidad-img"/>
+      <div class="especialidad-nombre">{{ especialidad.nombre }}</div>
+    </div>
+  </ng-container>
+  <p class="text-center mt-3" *ngIf="listaElementos.length === 0">Este especialista no posee especialidades disponibles.</p>
 </div>

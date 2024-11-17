@@ -63,3 +63,10 @@ body {
 .tabla-interactiva li {
     cursor: pointer;
 }
+
+.active-selection {
+    border: 2px solid #007bff;
+    background-color: #f0f8ff;
+    transform: scale(1.05);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}

@@ -1,8 +1,10 @@
 <div class="tabla-interactiva">
-    <ul class="list-group" *ngIf="this.listaElementos">
-      <li *ngFor="let turno of listaElementos" (click)="seleccionarTurno(turno)" class="list-group-item list-group-item-action" [class.active]="turno === this.turnoSeleccionado" [appDisableSelection]="!turno.disponible">
-        {{ turno.fecha + " - " + turno.hora }}
-      </li>
-    </ul>
-    <p class="text-center" *ngIf="!this.turnoSeleccionado">No se ha seleccionado un turno.</p>
+  <div class="row justify-content-center">
+    <div *ngFor="let turno of listaElementos" class="col-2 mb-3">
+      <button (click)="seleccionarTurno(turno)" class="btn btn-outline-primary rounded p-4 w-100 text-center" [class.active]="turno === this.turnoSeleccionado" [appDisableSelection]="!turno.disponible">
+        <div class="turno-text">{{ turno.fecha | date: 'dd-MM' }}</div>
+        <div class="turno-text">{{ formatearHora(turno.hora) }}</div>
+      </button>
+    </div>
+  </div>
 </div>

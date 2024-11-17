@@ -13,6 +13,7 @@ import { ListaEspecialistasComponent } from '../../components/nuevo-turno/lista-
 import { ListaTurnosComponent } from '../../components/nuevo-turno/lista-turnos/lista-turnos.component';
 import { Horario } from '../../components/nuevo-turno/interfaces/horario.interface';
 import { ListaPacientesComponent } from '../../components/nuevo-turno/lista-pacientes/lista-pacientes.component';
+import { InformacionEspecialidades } from '../../models/especialista.interface';
 
 @Component({
   selector: 'app-nuevo-turno',
@@ -24,13 +25,6 @@ import { ListaPacientesComponent } from '../../components/nuevo-turno/lista-paci
 
 export class NuevoTurnoPageComponent {
   public turnoForm!: FormGroup;
-  public especialidades: Especialidad[] = [];
-  public especialistas: Usuario[] = [];
-  public pacientes!: Usuario[];
-
-  public diasDisponibles: string[] = [];
-  public horariosDisponibles: any[] = [];
-  public turnosEspecialista: Turno[] = [];
   public usuarioRol!: string;
 
   constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private _authService: AuthService, private _mensajesService: MensajesService, private _router: Router) {
@@ -43,10 +37,8 @@ export class NuevoTurnoPageComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.generarProximos15Dias();
     this.usuarioRol = await this._authService.obtenerRol();
     if (this.usuarioRol == "admin") {
-      this.pacientes = await this._firestoreService.obtenerDocumentosPorCampo("usuarios", "rol", "paciente");
       // Hacer que el campo 'paciente' sea obligatorio si el usuario es admin
       this.paciente?.setValidators(Validators.required);
       this.paciente?.updateValueAndValidity();
@@ -70,24 +62,16 @@ export class NuevoTurnoPageComponent {
     return this.turnoForm.get('paciente');
   }
 
-  public generarProximos15Dias(): void {
-    // Genera los próximos 15 días hábiles (lunes a viernes)
-    const hoy = new Date();
-    for (let i = 0; i < 15; i++) {
-      const fecha = new Date(hoy);
-      fecha.setDate(hoy.getDate() + i);
-      if (fecha.getDay() !== 0 && fecha.getDay() !== 6) { // Excluye sábados y domingos
-        this.diasDisponibles.push(fecha.toLocaleDateString());
-      }
-    }
+  public async seleccionarEspecialista(especialista: any) {
+    this.especialista?.setValue(especialista);
+    // Resetear las selecciones siguientes.
   }
 
   public async seleccionarEspecialidad(especialidad: any) {
-    this.especialidad?.setValue(especialidad.nombre);
-  }
-
-  public async seleccionarEspecialista(especialista: any) {
-    this.especialista?.setValue(especialista);
+    this.especialidad?.setValue(especialidad);
+    // Resetear las selecciones siguientes.
+    this.dia?.setValue(null);
+    this.paciente?.setValue(null);
   }
 
   public async seleccionarTurno(turno: any) {
@@ -96,6 +80,27 @@ export class NuevoTurnoPageComponent {
 
   public async seleccionarPaciente(paciente: any) {
     this.paciente?.setValue(paciente);
+  }
+
+  public formatearHora(turno: Horario): string {
+    const fecha = new Date(`${turno.fecha}T${turno.hora}`);
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const horas = fecha.getHours().toString().padStart(2, '0');
+    const minutos = fecha.getMinutes().toString().padStart(2, '0');
+    return `${dia}-${mes} ${horas}:${minutos}`;
+  }
+
+  public irAtras(): void {
+    if (this.paciente?.value) {
+      this.paciente?.setValue(null);
+    } else if (this.dia?.value) {
+      this.dia?.setValue(null);
+    } else if (this.especialidad?.value) {
+      this.especialidad?.setValue(null);
+    } else if (this.especialista?.value) {
+      this.especialista?.setValue(null);
+    }
   }
 
   // Método para enviar el formulario
@@ -115,6 +120,7 @@ export class NuevoTurnoPageComponent {
 
       const especialistaDelTurno: Usuario = this.especialista?.value;
       const horarioDelTurno: Horario = this.dia?.value;
+      const especialidadDelTurno: InformacionEspecialidades = this.especialidad?.value;
 
       const nuevoTurno: Turno = {
         idEspecialista: especialistaDelTurno.id!,
@@ -122,7 +128,7 @@ export class NuevoTurnoPageComponent {
         estado: "solicitado",
         fecha: horarioDelTurno.fecha,
         hora: horarioDelTurno.hora,
-        especialidad: this.especialidad?.value,
+        especialidad: especialidadDelTurno.nombre,
         idPaciente: paciente?.id!,
         nombrePaciente: paciente?.informacion.nombre! + " " + paciente?.informacion.apellido!
       }
@@ -132,7 +138,6 @@ export class NuevoTurnoPageComponent {
       this._router.navigate(["home"]);
     }
     catch (error) {
-      console.log(error);
       this._mensajesService.lanzarMensajeError(":)", "Hubo un error durante la creación de tu turno, reintentalo más tarde.");
     }
   }

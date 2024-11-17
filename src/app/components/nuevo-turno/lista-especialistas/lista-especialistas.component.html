@@ -1,9 +1,16 @@
 <div class="tabla-interactiva">
-    <ul class="list-group" *ngIf="this.especialidadSeleccionada">
-      <li *ngFor="let especialista of listaElementos" (click)="seleccionarEspecialista(especialista)" class="list-group-item list-group-item-action" [class.active]="especialista === this.especialistaSeleccionado">
-        {{ especialista.informacion.nombre }} {{ especialista.informacion.apellido }}
-      </li>
-    </ul>
-    <p class="text-center" *ngIf="!this.especialidadSeleccionada">No se ha seleccionado una especialidad.</p>
-    <p class="text-center" *ngIf="this.especialidadSeleccionada && this.listaElementos.length == 0">No hay especialistas disponibles.</p>
+  <div class="d-flex flex-wrap justify-content-center" *ngIf="listaElementos.length > 0">
+    <div class="card card-especialista text-center m-2 p-2" *ngFor="let especialista of listaElementos" [appHighlightSelection]="especialista === especialistaSeleccionado" (click)="seleccionarEspecialista(especialista)">
+      <!-- Imagen del especialista -->
+      <img [src]="especialista.imagenUrl" alt="{{ especialista.informacion.nombre }}" class="card-img-top img-especialista rounded-circle">
+      <!-- Nombre del especialista -->
+      <div class="card-body p-2">
+        <p class="card-text fw-bold">
+          {{ especialista.informacion.nombre }} {{ especialista.informacion.apellido }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- Mensajes condicionales -->
+  <p class="text-center" *ngIf="listaElementos.length === 0">No hay especialistas disponibles.</p>
 </div>

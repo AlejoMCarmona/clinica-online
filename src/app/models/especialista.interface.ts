@@ -11,6 +11,7 @@ export interface InformacionEspecialidades {
   horariosDisponibilidad?: HorariosDisponibilidad[],
   duracionTurno: number;
   informacionCompletada: boolean;
+  imagenUrl?: string;
 }
 
 export interface HorariosDisponibilidad {

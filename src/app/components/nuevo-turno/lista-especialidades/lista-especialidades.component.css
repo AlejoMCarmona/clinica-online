@@ -1,0 +1,25 @@
+.especialidad-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #007bff; /* Primary color */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .especialidad-img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .especialidad-nombre {
+    margin-top: -20px; /* Sobresalir de la imagen */
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
+    color: #fff; /* Texto blanco */
+    font-size: 1rem; /* Tamaño de texto */
+    padding: 5px 10px; /* Espaciado interno */
+    border-radius: 10px; /* Bordes redondeados */
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+  }
+  

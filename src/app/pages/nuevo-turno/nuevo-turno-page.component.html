@@ -1,52 +1,84 @@
 <div class="container mt-4">
   <h1 class="text-center text-title text-uppercase">NUEVO TURNO</h1>
 
-  <div class="col-6 border p-4 mx-auto">
-    <form [formGroup]="turnoForm" (ngSubmit)="cargarTurno()">
-      <!-- Especialidad -->
-      <div class="mb-3">
-        <label for="especialidad" class="form-label">Especialidad</label>
-        <lista-especialidades (filaSeleccionada)="seleccionarEspecialidad($event)"></lista-especialidades>
-        <div *ngIf="especialidad?.dirty && especialidad?.touched" class="text-danger">
-          <div *ngIf="especialidad?.invalid">
-            La especialidad es obligatoria.
-          </div>
-        </div>
+  <div *ngIf="!this.turnoForm.valid" class="row">
+    <!-- Columna para mostrar las selecciones -->
+    <div class="col-4 border-end pe-4">
+      <h5 class="text-uppercase">Detalles del turno</h5>
+      <ul class="list-unstyled">
+        <li *ngIf="this.especialista?.value">
+          <strong>Especialista:</strong> {{ this.especialista?.value.informacion.nombre }} {{ this.especialista?.value.informacion.apellido }}
+        </li>
+        <li *ngIf="this.especialidad?.value">
+          <strong>Especialidad:</strong> {{ this.especialidad?.value.nombre }}
+        </li>
+        <li *ngIf="this.dia?.value">
+          <strong>Turno:</strong> {{ formatearHora(this.dia?.value) }}
+        </li>
+        <li *ngIf="this.paciente?.value && usuarioRol === 'admin'">
+          <strong>Paciente:</strong> {{ this.paciente?.value.nombre }} {{ this.paciente?.value.apellido }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Formulario de selección de datos -->
+    <div class="col-8">
+      <div *ngIf="!this.especialista?.value">
+        <h5 class="text-uppercase">Selecciona un especialista</h5>
+        <lista-especialistas (filaSeleccionada)="seleccionarEspecialista($event)"></lista-especialistas>
       </div>
-  
-      <!-- Especialista -->
-      <div class="mb-3">
-        <label for="especialista" class="form-label">Especialista</label>
-        <lista-especialistas [especialidadSeleccionada]="this.especialidad?.value" (filaSeleccionada)="seleccionarEspecialista($event)"></lista-especialistas>
-        <div *ngIf="especialista?.dirty && especialista?.touched" class="text-danger">
-          <div *ngIf="especialista?.invalid">
-            El especialista es obligatorio.
-          </div>
-        </div>
+
+      <div *ngIf="this.especialista?.value && !this.especialidad?.value">
+        <h5 class="text-uppercase">Selecciona una especialidad</h5>
+        <lista-especialidades [listadoEspecialidades]="this.especialista?.value.informacion.especialidades" (filaSeleccionada)="seleccionarEspecialidad($event)"></lista-especialidades>
       </div>
-  
-      <div class="mb-3">
-        <label for="dia" class="form-label">Turnos</label>
+
+      <div *ngIf="this.especialista?.value && this.especialidad?.value && !this.dia?.value">
+        <h5 class="text-uppercase">Selecciona un turno</h5>
         <lista-turnos [especialista]="this.especialista?.value" [especialidad]="this.especialidad?.value" (filaSeleccionada)="seleccionarTurno($event)"></lista-turnos>
-        <div *ngIf="dia?.touched && dia?.touched" class="text-danger">
-          <div *ngIf="dia?.invalid">
-            El turno es obligatorio.
-          </div>
-        </div>
       </div>
-  
-      <div class="mb-3" *ngIf="this.usuarioRol == 'admin'">
-        <label for="paciente" class="form-label">Paciente</label>
+
+      <div *ngIf="this.dia?.value && !this.paciente?.value && usuarioRol === 'admin'">
+        <h5 class="text-uppercase">Selecciona un paciente</h5>
         <lista-pacientes (filaSeleccionada)="seleccionarPaciente($event)"></lista-pacientes>
-        <div *ngIf="paciente?.touched && paciente?.touched" class="text-danger">
-          <div *ngIf="paciente?.invalid">
-            El paciente es obligatorio.
-          </div>
-        </div>
       </div>
-  
-      <!-- Botón de Enviar -->
-      <button type="submit" class="btn btn-dark w-100" [disabled]="this.turnoForm.invalid">Solicitar Turno</button>
-    </form>
+      <button class="btn btn-outline-dark mt-4 w-100" [disabled]="!this.especialista?.value" (click)="irAtras()">Ir un paso atrás</button>
+    </div>
+  </div>
+
+  <!-- Tabla final con la información del turno -->
+  <div *ngIf="this.turnoForm.valid" class="d-flex flex-column align-items-center mt-4">
+    <table class="table table-bordered w-50">
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Especialista</td>
+          <td>{{ this.especialista?.value.informacion.nombre }} {{ this.especialista?.value.informacion.apellido }}</td>
+        </tr>
+        <tr>
+          <td>Especialidad</td>
+          <td>{{ this.especialidad?.value.nombre }}</td>
+        </tr>
+        <tr>
+          <td>Turno</td>
+          <td>{{ formatearHora(this.dia?.value) }}</td>
+        </tr>
+        <tr *ngIf="this.paciente?.value && usuarioRol === 'admin'">
+          <td>Paciente</td>
+          <td>{{ this.paciente?.value.informacion.nombre }} {{ this.paciente?.value.informacion.apellido }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Botón para confirmar turno -->
+    <div class="row">
+      <button class="btn btn-outline-dark w-100 mb-2" [disabled]="!this.especialista?.value" (click)="irAtras()">Ir un paso atrás</button>
+      <button class="btn btn-dark w-100" (click)="cargarTurno()">Crear turno</button>
+    </div>
   </div>
 </div>
