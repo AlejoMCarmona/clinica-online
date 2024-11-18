@@ -126,13 +126,10 @@ export class FinalizarTurnoComponent {
       // Hago las modificaciones en base de datos
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoFinalizado);
       await this.cargarHistoriaPaciente(this.turnoSeleccionado, historiaClinica);
-      // Actualizo su estado en el listado de turno
-      this.turnoEnviado.emit(this.turnoSeleccionado);
       this.cerrarModal();
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue realizado");
     } catch (error) {
-      console.log(error);
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
     }
   }

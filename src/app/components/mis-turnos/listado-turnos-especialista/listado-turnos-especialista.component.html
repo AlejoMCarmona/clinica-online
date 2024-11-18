@@ -37,7 +37,7 @@
   </table>
 
   <!-- Modal para Cancelar Turno -->
-  <div class="modal fade" id="modal-cancelar-turno" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="modal-cancelar-turno" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -83,7 +83,7 @@
   </div>
 
   <!-- Modal para finalizar turno e historia clínica -->
-  <finalizar-turno [abrir]="this.modalFinalizarTurno" (cerrar)="this.cerrarModal()" [turnoSeleccionado]="this.turnoSeleccionado" (turnoEnviado)="actualizarTurnoFinalizadoEnListado($event)"></finalizar-turno>
+  <finalizar-turno [abrir]="this.modalFinalizarTurno" (cerrar)="this.cerrarModal()" [turnoSeleccionado]="this.turnoSeleccionado"></finalizar-turno>
 
   <!-- Modal para ver reseña -->
   <div class="modal fade" id="modalVerResena" tabindex="-1" aria-labelledby="modalVerResenaLabel" aria-hidden="true">

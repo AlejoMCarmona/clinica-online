@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
 import { MensajesService } from '../../../services/mensajes.service';
 import { EncuestaPaciente, Turno } from '../../../models/turno.interface';
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FiltroTurnosPacienteComponent } from '../filtro-turnos-paciente/filtro-turnos-paciente.component';
 import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
+import { Unsubscribe } from '@angular/fire/auth';
 
 @Component({
   selector: 'listado-turnos-paciente',
@@ -16,7 +17,7 @@ import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
   styleUrl: './listado-turnos-paciente.component.css'
 })
 
-export class ListadoTurnosPacienteComponent implements OnInit {
+export class ListadoTurnosPacienteComponent implements OnInit, OnDestroy {
   @Input() usuario!: Usuario;
   public listadoTurnosConAcciones: TurnoConAcciones[] = [];
   public turnosFiltrados: TurnoConAcciones[] = [];
@@ -24,16 +25,25 @@ export class ListadoTurnosPacienteComponent implements OnInit {
   public motivoCancelacion: string = "";
   public encuestaPaciente!: EncuestaPaciente;
   public calificacionAtencion: number | null = null;
+  private desuscripcion!: Unsubscribe;
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
     this.encuestaPaciente = { recomendarHospital: false, recomendarEspecialista: false, conformidad: false, recomendacion: "" };
-    const turnos: Turno[] = await this._firestoreService.obtenerDocumentosPorCampo("turnos", "idPaciente", this.usuario.id!);
-    turnos.forEach(turno => {
-      this.listadoTurnosConAcciones.push(this.cargarAccionesPermitidasAlTurno(turno));
-    });
-    this.turnosFiltrados = [...this.listadoTurnosConAcciones];
+    this.desuscripcion = this._firestoreService.obtenerDocumentosEnTiempoReal<Turno>('turnos', 'idPaciente', this.usuario.id!,
+      (turnos: Turno[]) => {
+        this.listadoTurnosConAcciones = turnos.map((turno) =>
+          this.cargarAccionesPermitidasAlTurno(turno)
+        );
+        this.turnosFiltrados = [...this.listadoTurnosConAcciones];
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.desuscripcion();
   }
 
   private cargarAccionesPermitidasAlTurno(turno: Turno): TurnoConAcciones {
@@ -42,55 +52,6 @@ export class ListadoTurnosPacienteComponent implements OnInit {
       ...turno,
       accionesPermitidas: accionesPermitidas
     };
-  }
-
-  public actualizarTurnoEnListado(turno: Turno): void {
-    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
-
-    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
-    this.listadoTurnosConAcciones.forEach(t => {
-      if (t.id === turno.id) {
-        t.estado = turno.estado || t.estado;
-        t.motivoEstado = turno.motivoEstado || t.motivoEstado;
-        t.accionesPermitidas = accionesPermitidas;
-      }
-    });
-    
-    this.cdr.detectChanges(); // Forzamos la actualización de la vista
-  }
-
-  public guardarEncuestaTurnoEnListado(turno: Turno): void {
-    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
-
-    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
-    this.listadoTurnosConAcciones.forEach(t => {
-      if (t.id === turno.id) {
-        t.comentariosPaciente = {
-          ...turno.comentariosPaciente,
-          encuesta: turno.comentariosPaciente?.encuesta
-        }
-        t.accionesPermitidas = accionesPermitidas;
-      }
-    });
-    
-    this.cdr.detectChanges(); // Forzamos la actualización de la vista
-  }
-
-  public guardarCalificacionTurnoEnListado(turno: Turno): void {
-    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
-
-    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
-    this.listadoTurnosConAcciones.forEach(t => {
-      if (t.id === turno.id) {
-        t.comentariosPaciente = {
-          ...turno.comentariosPaciente,
-          calificacion: turno.comentariosPaciente?.calificacion
-        }
-        t.accionesPermitidas = accionesPermitidas;
-      }
-    });
-    
-    this.cdr.detectChanges(); // Forzamos la actualización de la vista
   }
 
   public mapearATurno(turnoConAcciones: TurnoConAcciones): Turno {
@@ -137,8 +98,6 @@ export class ListadoTurnosPacienteComponent implements OnInit {
       // Hago la modificación en base de datos
       const { id, ...turnoModificado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
-      // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue cancelado");
     } catch (error) {
@@ -156,12 +115,10 @@ export class ListadoTurnosPacienteComponent implements OnInit {
       // Hago la modificación en base de datos
       const { id, ...turnoModificado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
-      // Actualizo su estado en el listado de turnos
-      this.guardarEncuestaTurnoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso("Encuesta completada", "La encuesta fue guardada correctamente");
     } catch (error) {
-      this._mensajesService.lanzarMensajeError("Error", "Hubo un problema al guardar la encuesta");
+      this._mensajesService.lanzarMensajeError(":(", "Hubo un problema al guardar la encuesta");
     }
   }
 
@@ -184,8 +141,6 @@ export class ListadoTurnosPacienteComponent implements OnInit {
       // Hago la modificación en base de datos
       const { id, ...turnoModificado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
-      // Actualizo su estado en el listado de turnos
-      this.guardarCalificacionTurnoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso("Calificación guardada", "La calificación de atención fue guardada correctamente");
     } catch (error) {

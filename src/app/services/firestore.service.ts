@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, writeBatch } from '@angular/fire/firestore';
+import { Unsubscribe } from '@angular/fire/auth';
+import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDoc, getDocs, onSnapshot, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, writeBatch } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -147,5 +148,46 @@ export class FirestoreService {
     } catch (error) {
       console.error("Error al eliminar el documento: ", error);
     }
+  }
+
+  // Streaming
+  /**
+   * Escucha cambios en tiempo real de documentos en una colección de Firestore,
+   * y devuelve los datos con su `id` agregado a cada documento.
+   * 
+   * @param coleccion - El nombre de la colección en Firestore.
+   * @param campo - El nombre del campo por el cual filtrar los documentos.
+   * @param valor - El valor del campo que se debe igualar para filtrar los documentos.
+   * @param callback - Función opcional que recibe los documentos actualizados cada vez que hay un cambio en tiempo real.
+   * 
+   * @returns Unsubscribe - Función para dejar de escuchar los cambios en tiempo real.
+   */
+  public obtenerDocumentosEnTiempoReal<T>(coleccion: string, campo: string, valor: any, callback?: (docs: (T & { id: string })[]) => void): Unsubscribe {
+    const coleccionRef = collection(this._firestore, coleccion);
+
+    let q;
+    if (campo != '' && valor != '') {
+      q = query(coleccionRef, where(campo, '==', valor));
+    } else {
+      q = coleccionRef;
+    }
+    
+    // Listener para escuchar los cambios en tiempo real
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const docs: (T & { id: string })[] = []; // Cada documento tendrá su información y también su ID.
+
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data() as T;
+        docs.push({ ...docData, id: doc.id });
+      });
+      
+      // Si existe, llama al callback con los datos obtenidos
+      if (callback) {
+        callback(docs);
+      } 
+    });
+
+    // Puedes devolver unsubscribe si necesitas dejar de escuchar en algún momento
+    return unsubscribe;
   }
 }

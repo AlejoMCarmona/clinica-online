@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
 import { MensajesService } from '../../../services/mensajes.service';
 import { Turno } from '../../../models/turno.interface';
@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
 import { FiltroTurnosEspecialistaComponent } from '../filtro-turnos-especialista/filtro-turnos-especialista.component';
 import { FinalizarTurnoComponent } from '../finalizar-turno/finalizar-turno.component';
+import { Unsubscribe } from '@angular/fire/auth';
 
 @Component({
   selector: 'listado-turnos-especialista',
@@ -17,22 +18,32 @@ import { FinalizarTurnoComponent } from '../finalizar-turno/finalizar-turno.comp
   styleUrl: './listado-turnos-especialista.component.css'
 })
 
-export class ListadoTurnosEspecialistaComponent {
+export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   @Input() usuario!: Usuario;
   public turnoSeleccionado!: Turno;
   public motivoEstado!: string;
   public listadoTurnosConAcciones: TurnoConAcciones[] = [];
   public turnosFiltrados: TurnoConAcciones[] = [];
   public modalFinalizarTurno: boolean = false;
+  public desuscripcion!: Unsubscribe
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
-    const listadoTurnos: Turno[] = await this._firestoreService.obtenerDocumentosPorCampo("turnos", "idEspecialista", this.usuario.id!);
-    listadoTurnos.forEach(t => {
-     this.listadoTurnosConAcciones.push(this.cargarAccionesPermitidasAlTurno(t));
-    });
-    this.turnosFiltrados = [...this.listadoTurnosConAcciones];
+    this.desuscripcion = this._firestoreService.obtenerDocumentosEnTiempoReal<Turno>('turnos', 'idEspecialista', this.usuario.id!,
+      (turnos: Turno[]) => {  // Callback que maneja los turnos actualizados
+        // Actualizamos los turnos con las acciones permitidas
+        this.listadoTurnosConAcciones = turnos.map((turno) =>
+          this.cargarAccionesPermitidasAlTurno(turno)
+        );
+        this.turnosFiltrados = [...this.listadoTurnosConAcciones];
+        this.cdr.detectChanges();  // Forzamos la actualización de la vista
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.desuscripcion();
   }
 
   private cargarAccionesPermitidasAlTurno(turno: Turno): TurnoConAcciones {
@@ -70,40 +81,6 @@ export class ListadoTurnosEspecialistaComponent {
     return acciones;
   }
 
-  public actualizarTurnoEnListado(turno: Turno): void {
-    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
-
-    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
-    this.listadoTurnosConAcciones.forEach(t => {
-      if (t.id === turno.id) {
-        t.estado = turno.estado;
-        t.motivoEstado = turno.motivoEstado || t.motivoEstado;
-        t.accionesPermitidas = accionesPermitidas;
-      }
-    });
-
-    // Forzamos la actualización de la vista
-    this.cdr.detectChanges();
-  }
-
-  public actualizarTurnoFinalizadoEnListado(turno: Turno): void {
-    const accionesPermitidas = this.obtenerAccionesPermitidas(turno); // Actualizamos las acciones permitidas según el nuevo estado
-
-    // Recorremos listadoEstadosTurnos y actualizamos solo el turno que coincide con el id
-    this.listadoTurnosConAcciones.forEach(t => {
-      if (t.id === turno.id) {
-        t.estado = 'realizado';
-        if (!t.comentariosEspecialista) t.comentariosEspecialista = {};
-        t.comentariosEspecialista.comentario = turno.comentariosEspecialista?.comentario;
-        t.comentariosEspecialista.diagnostico = turno.comentariosEspecialista?.diagnostico
-        t.accionesPermitidas = accionesPermitidas;
-      }
-    });
-
-    // Forzamos la actualización de la vista
-    this.cdr.detectChanges();
-  }
-
   public mapearATurno(turnoConAcciones: TurnoConAcciones): Turno {
     const { accionesPermitidas, ...turnoOriginal } = turnoConAcciones;
     return turnoOriginal as Turno;
@@ -117,9 +94,7 @@ export class ListadoTurnosEspecialistaComponent {
       this.turnoSeleccionado.motivoEstado = this.motivoEstado;
       // Hago la modificación en base de datos
       const { id, ...turnoCancelado} = this.turnoSeleccionado;
-      await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoCancelado);
-      // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(this.turnoSeleccionado);
+      await this._firestoreService.modificarDocumento("turnos", id!, turnoCancelado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue cancelado");
       this.motivoEstado = "";
@@ -136,7 +111,6 @@ export class ListadoTurnosEspecialistaComponent {
       const { id, ...turnoAceptado } = turno;
       await this._firestoreService.modificarDocumento("turnos", turno.id || "", turnoAceptado);
       // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(turno);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue aceptado");
     } catch (error) {
@@ -154,7 +128,6 @@ export class ListadoTurnosEspecialistaComponent {
       const { id, ...turnoModificado } = this.turnoSeleccionado;
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
       // Actualizo su estado en el listado de turnos
-      this.actualizarTurnoEnListado(this.turnoSeleccionado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue rechazado");
       this.motivoEstado = "";
