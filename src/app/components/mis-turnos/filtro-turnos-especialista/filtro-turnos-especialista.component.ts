@@ -22,22 +22,52 @@ export class FiltroTurnosEspecialistaComponent {
   private turnosFiltrados: TurnoConAcciones[] = [];
   public filtro: string = '';
 
-  // Método para aplicar el filtro
-  aplicarFiltro() {
-    const filtroLower = this.filtro.toLowerCase();
-    if (filtroLower) {
-      this.turnosFiltrados = this.turnosOriginales.filter(turno =>
-        turno.especialidad.toLowerCase().includes(filtroLower) ||
-        turno.nombrePaciente.toLowerCase().includes(filtroLower)
-      );
-    } else {
-      // Restauramos la lista completa si el filtro está vacío
-      this.turnosFiltrados = [...this.turnosOriginales];
-    }
+// Método para aplicar el filtro
+public aplicarFiltro() {
+  const filtroLower = this.filtro.toLowerCase();
+  if (filtroLower) {
+    this.turnosFiltrados = this.turnosOriginales.filter(turno => {
+      // Convertimos los datos de turno y datos fijos de la historia clínica en un solo string para buscar
+      const datosFijosTurno = `
+        ${turno.especialidad}
+        ${turno.nombreEspecialista}
+        ${turno.nombrePaciente}
+        ${turno.estado}
+        ${turno.fecha}
+        ${turno.hora}
+        ${turno.comentariosEspecialista?.comentario || ''}
+        ${turno.comentariosEspecialista?.diagnostico || ''}
+      `.toLowerCase();
 
-    // Emitimos la lista filtrada
-    this.enviarListaFiltrada();
+      const datosFijosHistoriaClinica = turno.historiaClinica
+        ? `
+          ${turno.historiaClinica.fechaTurno}
+          ${turno.historiaClinica.altura || ''}
+          ${turno.historiaClinica.peso || ''}
+          ${turno.historiaClinica.temperatura || ''}
+          ${turno.historiaClinica.presionArterial || ''}
+        `.toLowerCase()
+        : '';
+
+      // Convertimos los datos dinámicos en un string
+      const datosDinamicosHistoria = turno.historiaClinica?.datosDinamicos
+      ? JSON.stringify(turno.historiaClinica.datosDinamicos).toLowerCase()
+      : '';
+      // Combinamos todo y aplicamos el filtro
+      return (
+        datosFijosTurno.includes(filtroLower) || 
+        datosFijosHistoriaClinica.includes(filtroLower) || 
+        datosDinamicosHistoria.includes(filtroLower)
+      );
+    });
+  } else {
+    // Restauramos la lista completa si el filtro está vacío
+    this.turnosFiltrados = [...this.turnosOriginales];
   }
+
+  // Emitimos la lista filtrada
+  this.enviarListaFiltrada();
+}
 
   // Método para emitir la lista filtrada
   private enviarListaFiltrada() {

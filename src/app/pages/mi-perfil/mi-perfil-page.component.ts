@@ -7,6 +7,9 @@ import { PerfilConfiguracionEspecialistaComponent } from '../../components/perfi
 import { TablaHistoriaClinicaComponent } from '../../components/historia-clinica/tabla-historia-clinica/tabla-historia-clinica.component';
 import { HistoriaPaciente } from '../../models/historia-paciente.interface';
 import { FirestoreService } from '../../services/firestore.service';
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable';
+import { Paciente } from '../../models/paciente.interface';
 
 @Component({
   selector: 'app-mi-perfil',
@@ -63,7 +66,49 @@ export class MiPerfilPageComponent implements OnInit {
 
   public async obtenerHistoriaPaciente() {
     const historiaPacienteArray: HistoriaPaciente[] = await this._firestoreService.obtenerDocumentosPorCampo("historias-pacientes", "idPaciente", this.usuario.id!);
-    console.log(JSON.stringify(historiaPacienteArray));
     this.historiaPaciente = historiaPacienteArray[0];
+  }
+
+  public generarPdfHistoriaClinica() {
+    if (!this.historiaPaciente) return;
+  
+    const doc = new jsPDF();
+
+    // Logo e información básica
+    const fechaEmision = new Date().toLocaleDateString();
+    const img = new Image();
+    img.src = "/logo_clinica.png"
+    doc.addImage(img, 'PNG', 10, 10, 30, 30);
+    doc.setFontSize(16);
+    doc.text('Informe de Historia Clínica', 50, 20);
+    doc.setFontSize(10);
+    doc.text(`Fecha de emisión: ${fechaEmision}`, 50, 30);
+
+    // Información del paciente
+    const informacion: Paciente = this.usuario.informacion as Paciente;
+    doc.setFontSize(12);
+    doc.text(`Paciente: ${informacion.nombre} ${informacion.apellido}`, 10, 50);
+    doc.text(`Edad: ${informacion.edad} años`, 10, 60);
+    doc.text(`DNI: ${informacion.dni}`, 10, 70);
+    doc.text(`Obra social: ${informacion.obraSocial || 'No especificada'}`, 10, 80);
+  
+    // Tabla con la historia clínica
+    const rows = this.historiaPaciente.historiaClinica.map((historia) => [
+      historia.fechaTurno,
+      historia.altura + ' cm',
+      historia.peso + ' kg',
+      historia.temperatura + ' °C',
+      historia.presionArterial,
+      JSON.stringify(historia.datosDinamicos || {}).replace(/[{}"]/g, ''),
+    ]);
+  
+    autoTable(doc, {
+      head: [['Fecha', 'Altura', 'Peso', 'Temperatura', 'Presión Arterial', 'Datos Dinámicos']],
+      body: rows,
+      startY: 100,
+    });
+  
+    // Descargar el PDF
+    doc.save(`Historia_Clinica_${this.historiaPaciente.nombrePaciente}.pdf`);
   }
 }

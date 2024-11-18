@@ -1,3 +1,4 @@
+import { HistoriaClinica } from "../../../models/historia-paciente.interface";
 import { EstadoTurno } from "../../../models/turno.interface";
 
 export interface TurnoConAcciones {
@@ -12,6 +13,7 @@ export interface TurnoConAcciones {
     estado: EstadoTurno;
     motivoEstado?: string;
     accionesPermitidas: string[];
+    historiaClinica?: HistoriaClinica;
     comentariosEspecialista?: {
       comentario?: string;               // Comentario/Reseña del especialista luego de finalizar el turno
       diagnostico?: string;              // Diagnóstico del especialista luego de finalizar el turno

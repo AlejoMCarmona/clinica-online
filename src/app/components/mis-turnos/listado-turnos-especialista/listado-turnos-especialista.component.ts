@@ -9,6 +9,7 @@ import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
 import { FiltroTurnosEspecialistaComponent } from '../filtro-turnos-especialista/filtro-turnos-especialista.component';
 import { FinalizarTurnoComponent } from '../finalizar-turno/finalizar-turno.component';
 import { Unsubscribe } from '@angular/fire/auth';
+import { HistoriaClinica, HistoriaPaciente } from '../../../models/historia-paciente.interface';
 
 @Component({
   selector: 'listado-turnos-especialista',
@@ -24,19 +25,22 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   public motivoEstado!: string;
   public listadoTurnosConAcciones: TurnoConAcciones[] = [];
   public turnosFiltrados: TurnoConAcciones[] = [];
+  public historialesPacientes: HistoriaPaciente[] = [];
   public modalFinalizarTurno: boolean = false;
   public desuscripcion!: Unsubscribe
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
+    this.historialesPacientes = await this._firestoreService.obtenerDocumentos("historias-pacientes");
     this.desuscripcion = this._firestoreService.obtenerDocumentosEnTiempoReal<Turno>('turnos', 'idEspecialista', this.usuario.id!,
       (turnos: Turno[]) => {  // Callback que maneja los turnos actualizados
         // Actualizamos los turnos con las acciones permitidas
         this.listadoTurnosConAcciones = turnos.map((turno) =>
           this.cargarAccionesPermitidasAlTurno(turno)
         );
-        this.turnosFiltrados = [...this.listadoTurnosConAcciones];
+        this.listadoTurnosConAcciones = this.asociarHistoriasClinicas(this.listadoTurnosConAcciones, this.historialesPacientes);
+        this.turnosFiltrados = [...this.listadoTurnosConAcciones ];
         this.cdr.detectChanges();  // Forzamos la actualización de la vista
       }
     );
@@ -79,6 +83,29 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
     }
   
     return acciones;
+  }
+
+  private asociarHistoriasClinicas(turnos: TurnoConAcciones[], historiales: HistoriaPaciente[]): TurnoConAcciones[] {
+    const historiasPorTurno: Record<string, HistoriaClinica> = {};
+  
+    historiales.forEach(historial => {
+      historial.historiaClinica.forEach(historia => {
+        historiasPorTurno[historia.idTurno] = historia;
+      });
+    });
+  
+    // Enriquecer cada turno con su historia clínica correspondiente
+    const turnosConHistorias = turnos.map(turno => {
+      if (turno.id && historiasPorTurno[turno.id]) {
+        return {
+          ...turno,
+          historiaClinica: historiasPorTurno[turno.id],
+        };
+      }
+      return turno; // Si no tiene historia clínica, el turno queda igual
+    });
+  
+    return turnosConHistorias;
   }
 
   public mapearATurno(turnoConAcciones: TurnoConAcciones): Turno {

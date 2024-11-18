@@ -126,7 +126,7 @@ export class FinalizarTurnoComponent {
       const { id, ...turnoFinalizado } = this.turnoSeleccionado;
       const historiaClinica: HistoriaClinica = this.formularioHistoriaClinica.value;
       historiaClinica.idTurno = this.turnoSeleccionado.id!;
-      historiaClinica.fechaTurno = this.obtenerFechaActual();
+      historiaClinica.fechaTurno = this.turnoSeleccionado.fecha;
       // Hago las modificaciones en base de datos
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoFinalizado);
       await this.cargarHistoriaPaciente(this.turnoSeleccionado, historiaClinica);
@@ -136,13 +136,5 @@ export class FinalizarTurnoComponent {
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer rechazar el turno");
     }
-  }
-
-  private obtenerFechaActual(): string {
-    const fecha = new Date();
-    const anio = fecha.getFullYear();
-    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // Mes de 2 dígitos
-    const dia = fecha.getDate().toString().padStart(2, '0'); // Día de 2 dígitos
-    return `${anio}-${mes}-${dia}`;
   }
 }
