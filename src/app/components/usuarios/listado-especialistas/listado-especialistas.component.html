@@ -15,7 +15,7 @@
                 <td>{{ especialista.informacion.nombre }} {{ especialista.informacion.apellido }}</td>
                 <td>{{ especialista.informacion.edad }}</td>
                 <td>{{ this.obtenerEspecialidades(especialista) }}</td>
-                <td><img class="img-perfil mx-auto" src="{{ especialista.imagen }}"></td>
+                <td><img class="img-perfil mx-auto" style="width: 50px;" src="{{ especialista.imagen }}"></td>
                 <td><button class="btn btn-dark" [ngClass]="especialista.autorizado ? 'btn-danger' : 'btn-success'" (click)="cambiarAutorizacion(especialista)">{{ especialista.autorizado ? 'Desactivar' : 'Activar' }}</button></td>
             </tr>
         </tbody>

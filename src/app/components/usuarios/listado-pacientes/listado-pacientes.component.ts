@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
 import { StorageService } from '../../../services/storage.service';
 
@@ -13,6 +13,7 @@ import { StorageService } from '../../../services/storage.service';
 
 export class ListadoPacientesComponent {
   public listaPacientes: any[] = [];
+  @Output() idPacienteSeleccionado = new EventEmitter<string>();
 
   constructor(private _firestoreService: FirestoreService, private _storageService: StorageService) {}
 

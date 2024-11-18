@@ -30,7 +30,7 @@ export class FinalizarTurnoComponent {
       altura: ['', Validators.required],
       peso: ['', Validators.required],
       temperatura: ['', Validators.required],
-      presion: ['', Validators.required],
+      presionArterial: ['', Validators.required],
       datosDinamicos: this.fb.array([]),
     });
 
@@ -52,8 +52,8 @@ export class FinalizarTurnoComponent {
     return this.formularioHistoriaClinica.get('temperatura');
   }
 
-  get presion() {
-    return this.formularioHistoriaClinica.get('presion');
+  get presionArterial() {
+    return this.formularioHistoriaClinica.get('presionArterial');
   }
 
   get datosDinamicos(): FormArray {
@@ -61,6 +61,10 @@ export class FinalizarTurnoComponent {
   }
 
   public cerrarModal(): void {
+    this.comentario = "";
+    this.diagnostico = "";
+    this.formularioHistoriaClinica.reset();
+    this.pasoActual = 1;
     this.cerrar.emit();  // Emite evento de cierre al componente padre
   }
 

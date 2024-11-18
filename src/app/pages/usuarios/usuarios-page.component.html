@@ -1,11 +1,11 @@
 <div class="container">
     <h1 class="text-center text-title text-uppercase">Usuarios</h1>
     <div class="row justify-content-center mb-2">
-        <div class="col-lg-5 col-12 ">
+        <div class="col-lg-6 col-12 ">
             <listado-especialistas></listado-especialistas>
         </div>
-        <div class="col-lg-5 col-12">
-            <listado-pacientes></listado-pacientes>
+        <div class="col-lg-6 col-12">
+            <listado-pacientes (idPacienteSeleccionado)="this.mostrarHistoriaClinica($event)"></listado-pacientes>
         </div>
     </div>
     <div class="row justify-content-center">
@@ -15,4 +15,21 @@
     </div>
     <hr>
     <registro [permitirRegistroAdmin]="true" [habilitarRedireccionamiento]="false"></registro>
+</div>
+
+<!-- Modal para mostrar la historia clínica -->
+<div class="modal fade" [ngClass]="{ show: modalHistoriaClinicaVisible }" [style.display]="modalHistoriaClinicaVisible ? 'block' : 'none'" tabindex="-1" role="dialog" aria-labelledby="modalHistoriaClinicaLabel">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHistoriaClinicaLabel">Historia Clínica</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalHistoriaClinica()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <tabla-historia-clinica *ngIf="historiaClinicaSeleccionada" [historiaPaciente]="historiaClinicaSeleccionada"></tabla-historia-clinica>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{ show: modalHistoriaClinicaVisible }" *ngIf="modalHistoriaClinicaVisible">
 </div>

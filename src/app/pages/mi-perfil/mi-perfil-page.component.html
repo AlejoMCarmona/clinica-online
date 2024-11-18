@@ -1,6 +1,7 @@
+<h1 class="text-title text-center mb-3">MI PERFIL</h1>
 <div class="container mt-5">
   <!-- Información del Usuario -->
-  <div class="card mb-4 col-6 mx-auto" *ngIf="this.usuario">
+  <div class="card mb-4 col-8 mx-auto" *ngIf="this.usuario">
     <div class="card-header">Información del Usuario</div>
     <div class="card-body row d-flex flex-row">
       <div class="col-6">
@@ -12,9 +13,14 @@
       </div>
       <!-- Muestra la imagen del usuario si existe -->
       <div class="col-6 d-flex justify-content-end" *ngIf="imagenUrl">
-        <img [src]="imagenUrl" alt="Imagen de perfil" class="img-thumbnail" style="max-width: 150px;">
+        <img [src]="imagenUrl" alt="Imagen de perfil" class="img-thumbnail" style="max-width: 200px;">
       </div>
     </div>
+  </div>
+
+  <div *ngIf="this.usuario && this.usuario.rol == 'paciente' && this.historiaPaciente">
+    <hr>
+    <tabla-historia-clinica [historiaPaciente]="this.historiaPaciente"></tabla-historia-clinica>
   </div>
 
   <!-- Disponibilidad Horaria del Especialista -->

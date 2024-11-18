@@ -1,0 +1,42 @@
+<div class="container mt-4 col-10">
+    <h2 class="text-center mb-4">Historia Clínica de {{ historiaPaciente.nombrePaciente }}</h2>
+  
+    <div *ngIf="!historiaPaciente" class="text-center">
+      <p>Este paciente aún no tiene una historia clínica.</p>
+    </div>
+
+    <!-- Tabla de historial clínico -->
+    <div *ngIf="historiaPaciente" class="tabla-scroll">
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Fecha del Turno</th>
+            <th>Altura (cm)</th>
+            <th>Peso (kg)</th>
+            <th>Temperatura (°C)</th>
+            <th>Presión Arterial</th>
+            <th>Datos Dinámicos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let historia of historiaPaciente.historiaClinica">
+            <td>{{ historia.fechaTurno }}</td>
+            <td>{{ historia.altura }}</td>
+            <td>{{ historia.peso }}</td>
+            <td>{{ historia.temperatura }}</td>
+            <td>{{ historia.presionArterial }}</td>
+            <td>
+              <!-- Muestra los datos dinámicos en formato clave-valor -->
+              <ul *ngIf="historia.datosDinamicos" class="list-unstyled">
+                <li *ngFor="let datoDinamico of historia.datosDinamicos">
+                  - <strong>{{ datoDinamico.clave }}:</strong> {{ datoDinamico.valor }}
+                </li>
+              </ul>
+              <span *ngIf="!historia.datosDinamicos">No disponible</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
