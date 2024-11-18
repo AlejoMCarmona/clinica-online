@@ -69,7 +69,7 @@ export class FirestoreService {
     return data;
   }
 
-  public async obtenerDocumentosPorID(nombreColeccion: string, id: string) {
+  public async obtenerDocumentosPorID(nombreColeccion: string, id: string): Promise<any | null> {
     const docRef = doc(this._firestore, nombreColeccion, id);
     const docSnap = await getDoc(docRef);
     const dataDocumento = docSnap.data();

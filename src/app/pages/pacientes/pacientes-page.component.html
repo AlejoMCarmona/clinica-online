@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    <h1 class="text-center text-title mb-">PACIENTES ATENDIDOS</h1>
+  
+    <!-- Mostrar mensaje si no hay pacientes atendidos -->
+    <div *ngIf="pacientesAtendidos.length === 0" class="text-center text-muted">
+      <p>No has atendido a ningún paciente aún.</p>
+    </div>
+  
+    <!-- Lista de pacientes atendidos -->
+    <div class="tabla-scroll" *ngIf="pacientesAtendidos.length > 0">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>Nombre completo</th>
+                <th>DNI</th>
+                <th>Edad</th>
+                <th>Imagen</th>
+                <th>Historia clínica</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let paciente of pacientesAtendidos">
+                <td>{{ paciente.informacion.nombre }} {{ paciente.informacion.apellido }}</td>
+                <td>{{ paciente.informacion.dni }}</td>
+                <td>{{ paciente.informacion.edad }} años</td>
+                <td>
+                  <img [src]="paciente.imagenUrl" alt="Imagen del paciente" class="img-thumbnail" style="max-width: 80px;">
+                </td>
+                <td>
+                  <button class="btn btn-dark w-100 h-100 border-0" (click)="verHistoriaClinica(paciente.id!)">
+                    Ver historia clínica
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+  <!-- Modal para mostrar la historia clínica -->
+<div class="modal fade" [ngClass]="{ show: modalVisible }" [style.display]="modalVisible ? 'block' : 'none'" tabindex="-1" role="dialog" aria-labelledby="modalVisible">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Historia Clínica</h5>
+                <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <tabla-historia-clinica *ngIf="historiaSeleccionada" [historiaPaciente]="historiaSeleccionada"></tabla-historia-clinica>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{ show: modalVisible }" *ngIf="modalVisible">
+</div>
+  

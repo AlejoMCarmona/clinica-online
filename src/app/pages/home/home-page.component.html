@@ -51,6 +51,15 @@
                     </div>
                 </div>
             </div>
+            <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'especialista'">
+                <div class="card card-clickeable" routerLink="/pacientes">
+                    <i class="bi bi-calendar-plus mx-auto"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Pacientes</h5>
+                        <p class="card-text">Observa la información de tus pacientes.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

@@ -1,0 +1,12 @@
+.tabla-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.modal-xl {
+    max-width: 90%;
+}
+
+td {
+    height: 60px;
+}

@@ -10,5 +10,6 @@ export const routes: Routes = [
     { path: 'nuevo-turno', loadComponent: () => import('./pages/nuevo-turno/nuevo-turno-page.component').then(m => m.NuevoTurnoPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin', 'paciente'] } },
     { path: 'mi-perfil', loadComponent: () => import('./pages/mi-perfil/mi-perfil-page.component').then(m => m.MiPerfilPageComponent), canActivate: [ authorizedAccessGuard ] },
     { path: 'mis-turnos', loadComponent: () => import('./pages/mis-turnos/mis-turnos-page.component').then(m => m.MisTurnosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['especialista', 'paciente'] } },
-    { path: 'turnos', loadComponent: () => import('./pages/turnos/turnos-page.component').then(m => m.TurnosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin'] } }
+    { path: 'turnos', loadComponent: () => import('./pages/turnos/turnos-page.component').then(m => m.TurnosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin'] } },
+    { path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes-page.component').then(m => m.PacientesPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['especialista'] } }
 ];
