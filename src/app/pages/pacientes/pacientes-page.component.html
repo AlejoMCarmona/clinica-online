@@ -7,38 +7,49 @@
     </div>
   
     <!-- Lista de pacientes atendidos -->
-    <div class="tabla-scroll" *ngIf="pacientesAtendidos.length > 0">
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-              <tr>
-                <th>Nombre completo</th>
-                <th>DNI</th>
-                <th>Edad</th>
-                <th>Imagen</th>
-                <th>Historia clínica</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let paciente of pacientesAtendidos">
-                <td>{{ paciente.informacion.nombre }} {{ paciente.informacion.apellido }}</td>
-                <td>{{ paciente.informacion.dni }}</td>
-                <td>{{ paciente.informacion.edad }} años</td>
-                <td>
-                  <img [src]="paciente.imagenUrl" alt="Imagen del paciente" class="img-thumbnail" style="max-width: 80px;">
-                </td>
-                <td>
-                  <button class="btn btn-dark w-100 h-100 border-0" (click)="verHistoriaClinica(paciente.id!)">
-                    Ver historia clínica
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-        </table>
+    <div class="row" *ngIf="pacientesAtendidos.length > 0">
+      <div class="col-md-5 mb-4" *ngFor="let item of pacientesAtendidos">
+        <div class="card h-100 shadow">
+          <!-- Imagen del paciente -->
+          <img [src]="item.usuario.imagenUrl" alt="Imagen del usuario" class="card-img-top img-thumbnail mx-auto" style="width: 300px;object-fit: cover;">       
+          <!-- Información del paciente -->
+          <div class="card-body">
+            <h3 class="card-title text-center mb-3">{{ item.usuario.informacion.nombre }} {{ item.usuario.informacion.apellido }}</h3>
+            <div class="w-75 mx-auto">
+              <div class="row">
+                <div class="col-6"><strong>DNI:</strong> {{ item.usuario.informacion.dni }}<br></div>
+                <div class="col-6 text-end"><strong>Edad:</strong> {{ item.usuario.informacion.edad }} años<br></div>
+              </div>
+              <div class="row">
+                <div class="col-12"><strong>Email:</strong> {{ item.usuario.email }}</div>  
+              </div>
+            </div>
+            <hr>
+            <!-- Lista de últimos turnos -->
+            <div>
+              <h5 class="mb-2">Últimos turnos:</h5>
+              <ul class="list-unstyled mb-0">
+                <li *ngFor="let turno of item.Turno.slice(0, 3)" class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted">{{ turno.fecha }} - {{ turno.hora }} - {{ turno.especialidad }}</span>
+                  <button class="btn btn-dark" (click)="verHistoriaClinica(turno)">Historia clínica</button>
+                </li>
+                <li *ngIf="item.Turno.length === 0">No hay turnos registrados.</li>
+              </ul>
+            </div>
+          </div>
+    
+          <!-- Botón para ver historia clínica -->
+          <div class="card-footer bg-light text-center">
+            <button class="btn btn-dark w-100" (click)="verHistoriaClinicaCompleta(item.usuario.id!)">
+              Ver historia clínica completa
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
   <!-- Modal para mostrar la historia clínica -->
-<div class="modal fade" [ngClass]="{ show: modalVisible }" [style.display]="modalVisible ? 'block' : 'none'" tabindex="-1" role="dialog" aria-labelledby="modalVisible">
+<div class="modal fade" [ngClass]="{ show: modalHistoriaClinicaCompletaVisible }" [style.display]="modalHistoriaClinicaCompletaVisible ? 'block' : 'none'" tabindex="-1" role="dialog" aria-labelledby="modalHistoriaClinicaCompletaVisible">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -51,6 +62,43 @@
         </div>
     </div>
 </div>
-<div class="modal-backdrop fade" [ngClass]="{ show: modalVisible }" *ngIf="modalVisible">
+<div class="modal-backdrop fade" [ngClass]="{ show: modalHistoriaClinicaCompletaVisible }" *ngIf="modalHistoriaClinicaCompletaVisible">
 </div>
   
+  <!-- Modal para mostrar la historia clínica de un turno -->
+  <div class="modal fade" [ngClass]="{ show: modalHistoriaClinicaVisible }" [style.display]="modalHistoriaClinicaVisible ? 'block' : 'none'" tabindex="-1" role="dialog" aria-labelledby="modalHistoriaClinicaVisible">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Historia Clínica - {{this.historiaClinicaDelTurnoSeleccionada?.fechaTurno}}</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalHistoriaClinicaTurno()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="w-75 mx-auto">
+                <div class="row">
+                  <p class="col-6"><span class="fw-bold">Altura: </span>{{this.historiaClinicaDelTurnoSeleccionada?.altura}}</p>
+                  <p class="col-6 text-end"><span class="fw-bold">Peso: </span>{{this.historiaClinicaDelTurnoSeleccionada?.peso}}</p>
+                </div>
+                <div class="row">
+                  <p class="col-6"><span class="fw-bold">Presión arterial: </span>{{this.historiaClinicaDelTurnoSeleccionada?.presionArterial}}</p>
+                  <p class="col-6 text-end"><span class="fw-bold">Temperatura: </span>{{this.historiaClinicaDelTurnoSeleccionada?.temperatura}}</p>
+                </div>                
+              </div>
+              <hr>
+              <div class="row mx-auto text-center">
+                <ng-container *ngIf="historiaClinicaDelTurnoSeleccionada?.datosDinamicos.length > 0">
+                  <p class="fw-bold mb-1">Datos dinámicos:</p>
+                  <div *ngFor="let datoDinamico of historiaClinicaDelTurnoSeleccionada?.datosDinamicos">
+                    <p>- {{datoDinamico.clave}}: {{datoDinamico.valor}}</p>
+                  </div>
+                </ng-container>
+                <div class="text-center" *ngIf="historiaClinicaDelTurnoSeleccionada?.datosDinamicos.length == 0">
+                  <p class="mb-1">En este turno no se cargaron datos dinámicos.</p>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+<div class="modal-backdrop fade" [ngClass]="{ show: modalHistoriaClinicaVisible }" *ngIf="modalHistoriaClinicaVisible">
+</div>

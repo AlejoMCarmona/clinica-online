@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Unsubscribe } from '@angular/fire/auth';
-import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDoc, getDocs, onSnapshot, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, writeBatch } from '@angular/fire/firestore';
+import { addDoc, collection, deleteDoc, doc, DocumentData, Firestore, getDoc, getDocs, limit, onSnapshot, orderBy, OrderByDirection, query, QuerySnapshot, updateDoc, where, WhereFilterOp, writeBatch } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +66,31 @@ export class FirestoreService {
       });
     });
 
+    return data;
+  }
+
+  public async obtenerDocumentosConFiltros(nombreColeccion: string, condiciones: { campo: string; operador: WhereFilterOp; valor: any }[], limite: number) {
+    const colRef = collection(this._firestore, nombreColeccion);
+    
+    let q = query(colRef);
+    condiciones.forEach(condicion => {
+      q = query(q, where(condicion.campo, condicion.operador, condicion.valor));
+    });
+    
+    if (limite > 0) {
+      q = query(q, limit(limite));
+    }
+  
+    const data: any[] = [];
+    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+    
+    querySnapshot.forEach(doc => {
+      data.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+  
     return data;
   }
 
