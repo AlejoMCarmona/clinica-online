@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Usuario } from '../../../models/usuarios.interface';
 import { FirestoreService } from '../../../services/firestore.service';
 import { StorageService } from '../../../services/storage.service';
 import { MensajesService } from '../../../services/mensajes.service';
 import { Especialista } from '../../../models/especialista.interface';
+import { BotonDescargarTurnosComponent } from '../boton-descargar-turnos/boton-descargar-turnos.component';
 
 @Component({
   selector: 'listado-especialistas',
   standalone: true,
-  imports: [ CommonModule ],
+  imports: [ CommonModule, BotonDescargarTurnosComponent ],
   templateUrl: './listado-especialistas.component.html',
   styleUrl: './listado-especialistas.component.css'
 })

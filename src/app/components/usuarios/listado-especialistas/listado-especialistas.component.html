@@ -1,23 +1,21 @@
-<h3>Especialistas</h3>
-<div class="tabla-scroll">
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Nombre completo</th>
-                <th>Edad</th>
-                <th>Especialidades</th>
-                <th>Imagen</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let especialista of listaEspecialistas">
-                <td>{{ especialista.informacion.nombre }} {{ especialista.informacion.apellido }}</td>
-                <td>{{ especialista.informacion.edad }}</td>
-                <td>{{ this.obtenerEspecialidades(especialista) }}</td>
-                <td><img class="img-perfil mx-auto" style="width: 50px;" src="{{ especialista.imagen }}"></td>
-                <td><button class="btn btn-dark" [ngClass]="especialista.autorizado ? 'btn-danger' : 'btn-success'" (click)="cambiarAutorizacion(especialista)">{{ especialista.autorizado ? 'Desactivar' : 'Activar' }}</button></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="container">
+    <h3>Especialistas</h3>
+    <div class="row" style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">
+        <div class="col-md-3 mb-4" *ngFor="let especialista of listaEspecialistas">
+          <div class="card shadow h-100">
+            <img [src]="especialista.imagen" class="card-img-top img-thumbnail mx-auto mt-3" alt="Imagen de {{ especialista.informacion.nombre }}" style="width: 100px; height: 100px; object-fit: cover;">
+            <div class="card-body text-center">
+              <h5 class="card-title">{{ especialista.informacion.nombre }} {{ especialista.informacion.apellido }}</h5>
+              <div class="text-start">
+                <p class="mb-1"><strong>Edad:</strong> {{ especialista.informacion.edad }}</p>
+                <p class="mb-1"><strong>Especialidades:</strong> {{ this.obtenerEspecialidades(especialista) }}</p>
+              </div>
+            </div>
+            <div class="card-footer text-center">
+              <button class="btn w-100 mb-2" [ngClass]="especialista.autorizado ? 'btn-danger' : 'btn-success'" (click)="cambiarAutorizacion(especialista)">{{ especialista.autorizado ? 'Desactivar' : 'Activar' }}</button>
+              <boton-descargar-turnos [usuario]="especialista" [esEspecialista]="true"></boton-descargar-turnos>
+            </div>
+          </div>
+        </div>
+    </div>
 </div>

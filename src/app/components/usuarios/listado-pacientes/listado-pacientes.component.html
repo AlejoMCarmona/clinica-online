@@ -1,23 +1,21 @@
-<h3>Pacientes</h3>
-<div class="tabla-scroll">
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Nombre completo</th>
-                <th>Edad</th>
-                <th>Obra Social</th>
-                <th>Imagen</th>
-                <th>Historia clínica</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let usuario of listaPacientes">
-                <td>{{ usuario.informacion.nombre }} {{ usuario.informacion.apellido }}</td>
-                <td>{{ usuario.informacion.edad }}</td>
-                <td>{{ usuario.informacion.obraSocial }}</td>
-                <td><img class="img-perfil mx-auto" style="width: 50px;" src="{{ usuario.imagen }}"></td>
-                <td><button class="btn btn-dark w-100" (click)="this.idPacienteSeleccionado.emit(usuario.id)">Ver</button></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="container">
+    <h3>Pacientes</h3>
+    <div class="row" style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">
+        <div class="col-md-3 mb-4" *ngFor="let usuario of listaPacientes">
+          <div class="card shadow h-100">
+            <img [src]="usuario.imagen" class="card-img-top img-thumbnail mx-auto mt-3" alt="Imagen de {{ usuario.informacion.nombre }}" style="width: 100px; height: 100px; object-fit: cover;">
+            <div class="card-body text-center">
+              <h5 class="card-title">{{ usuario.informacion.nombre }} {{ usuario.informacion.apellido }}</h5>
+              <div class="text-start">
+                <p class="mb-1"><strong>Edad:</strong> {{ usuario.informacion.edad }}</p>
+                <p class="mb-1"><strong>Obra Social:</strong> {{ usuario.informacion.obraSocial }}</p>
+              </div>
+            </div>
+            <div class="card-footer text-center">
+              <button class="btn btn-dark w-100 mb-2" (click)="this.idPacienteSeleccionado.emit(usuario.id)">Historia clínica</button>
+              <boton-descargar-turnos [usuario]="usuario" [esEspecialista]="false"></boton-descargar-turnos>
+            </div>
+          </div>
+        </div>
+    </div>
 </div>

@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
 import { StorageService } from '../../../services/storage.service';
+import { Usuario } from '../../../models/usuarios.interface';
+import { BotonDescargarTurnosComponent } from '../boton-descargar-turnos/boton-descargar-turnos.component';
 
 @Component({
   selector: 'listado-pacientes',
   standalone: true,
-  imports: [ CommonModule ],
+  imports: [ CommonModule, BotonDescargarTurnosComponent ],
   templateUrl: './listado-pacientes.component.html',
   styleUrl: './listado-pacientes.component.css'
 })
