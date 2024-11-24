@@ -1,10 +1,21 @@
 <div class="container">
     <h1 class="text-title text-center">INFORMES</h1>
     
-    <div class="row">
+    <div class="row d-flex justify-content-center">
         <div class="col-lg-5 col-12">
             <h2 class="text-subtitle ps-2">Ingresos al sistema</h2>
             <informe-logs></informe-logs>
         </div>
+        <div class="col-lg-5 col-12" *ngIf="turnos">
+            <h2 class="text-subtitle ps-2"> Turnos por especialidad</h2>
+            <informe-turnos-por-especialidad [turnos]="turnos"></informe-turnos-por-especialidad>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-5 col-12" *ngIf="turnos">
+            <h2 class="text-subtitle ps-2">Turnos por día</h2>
+            <informe-turnos-por-dia [turnos]="turnos"></informe-turnos-por-dia>
+        </div>
     </div>
 </div>
+
