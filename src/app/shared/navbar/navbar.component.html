@@ -24,6 +24,9 @@
           <li class="nav-item" *ngIf="estaLogueado && rol == 'especialista'">
             <a class="nav-link active" routerLink="pacientes" routerLinkActive="active-route">Pacientes</a>
           </li>
+          <li class="nav-item" *ngIf="estaLogueado && rol == 'admin'">
+            <a href="#" class="nav-link" routerLinkActive="active-route" routerLink="informes">Informes</a>
+          </li>
           <li class="nav-item" *ngIf="estaLogueado">
             <a href="#" class="nav-link ms-2 border-start" routerLinkActive="active-route" routerLink="mi-perfil">Mi perfil</a>
           </li>

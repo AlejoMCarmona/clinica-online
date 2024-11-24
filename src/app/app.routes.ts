@@ -11,5 +11,6 @@ export const routes: Routes = [
     { path: 'mi-perfil', loadComponent: () => import('./pages/mi-perfil/mi-perfil-page.component').then(m => m.MiPerfilPageComponent), canActivate: [ authorizedAccessGuard ], data: { animation: 'mi-perfil' } },
     { path: 'mis-turnos', loadComponent: () => import('./pages/mis-turnos/mis-turnos-page.component').then(m => m.MisTurnosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['especialista', 'paciente'], animation: 'mis-turnos' } },
     { path: 'turnos', loadComponent: () => import('./pages/turnos/turnos-page.component').then(m => m.TurnosPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin'], animation: 'turnos' } },
-    { path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes-page.component').then(m => m.PacientesPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['especialista'], animation: 'pacientes' } }
+    { path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes-page.component').then(m => m.PacientesPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['especialista'], animation: 'pacientes' } },
+    { path: 'informes', loadComponent: () => import('./pages/informes/informes-page.component').then(m => m.InformesPageComponent), canActivate: [ authorizedAccessGuard ], data: { rol: ['admin'], animation: 'informes' } }
 ];

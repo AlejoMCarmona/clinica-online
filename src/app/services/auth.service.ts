@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { FirestoreService } from './firestore.service';
 import { Usuario } from '../models/usuarios.interface';
 import { MensajesService } from './mensajes.service';
+import { LogIngreso } from '../models/log-ingreso.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,37 @@ export class AuthService {
       throw Error("auth/specialist-no-activated");
     }
 
+    // Log de inicio de sesión
+    const log: LogIngreso = await this.crearLog(email)
+    await this._fire.subirDocumento(log, "log-ingresos");
+
     return undefined;
+  }
+
+  private async crearLog(email: string) {
+    const idUsuario = await this.obtenerIdUsuario();
+    const log: LogIngreso = {
+      idUsuario: idUsuario,
+      emailUsuario: email,
+      fecha: this.obtenerFechaActual(),
+      hora: this.obtenerHoraActual()
+    }
+    return log;
+  }
+
+  private obtenerFechaActual(): string {
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const día = String(fecha.getDate()).padStart(2, '0');
+    return `${año}-${mes}-${día}`;
+  }
+
+  private obtenerHoraActual(): string {
+    const fecha = new Date();
+    const horas = String(fecha.getHours()).padStart(2, '0');
+    const minutos = String(fecha.getMinutes()).padStart(2, '0');
+    return `${horas}:${minutos}`;
   }
 
   public async registrarUsuarioConVerificacion(email: string, password: string, usuarioInformacion: Usuario): Promise<string | undefined> {

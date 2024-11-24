@@ -1,0 +1,21 @@
+<div class="container mt-4">
+    <div class="table-responsive scrolleable p-2 border rounded">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Usuario (Email)</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of logs">
+            <td>{{ log.emailUsuario }}</td>
+            <td>{{ log.fecha }}</td>
+            <td>{{ log.hora }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
