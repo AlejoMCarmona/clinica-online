@@ -32,8 +32,8 @@ export class ListadoTurnosPacienteComponent implements OnInit, OnDestroy {
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
-    this.historialesPacientes = await this._firestoreService.obtenerDocumentos("historias-pacientes");
     this.encuestaPaciente = { recomendarHospital: false, recomendarEspecialista: false, conformidad: false, recomendacion: "" };
+    this.historialesPacientes = await this._firestoreService.obtenerDocumentos("historias-pacientes");
     this.desuscripcion = this._firestoreService.obtenerDocumentosEnTiempoReal<Turno>('turnos', 'idPaciente', this.usuario.id!,
       (turnos: Turno[]) => {
         this.listadoTurnosConAcciones = turnos.map((turno) =>

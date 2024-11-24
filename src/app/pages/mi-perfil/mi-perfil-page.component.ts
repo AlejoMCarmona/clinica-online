@@ -10,11 +10,15 @@ import { FirestoreService } from '../../services/firestore.service';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 import { Paciente } from '../../models/paciente.interface';
+import { Turno } from '../../models/turno.interface';
+import { FormsModule } from '@angular/forms';
+import { MensajesService } from '../../services/mensajes.service';
+import { WhereFilterOp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-mi-perfil',
   standalone: true,
-  imports: [ CommonModule, PerfilConfiguracionEspecialistaComponent, TablaHistoriaClinicaComponent ],
+  imports: [ CommonModule, PerfilConfiguracionEspecialistaComponent, TablaHistoriaClinicaComponent, FormsModule ],
   templateUrl: './mi-perfil-page.component.html',
   styleUrl: './mi-perfil-page.component.css'
 })
@@ -23,8 +27,11 @@ export class MiPerfilPageComponent implements OnInit {
   public usuario!: Usuario;
   public imagenUrl!: string;
   public historiaPaciente!: HistoriaPaciente;
+  public especialidadSeleccionada: string = '';
+  public especialidades: string[] = [];
+  private turnos: Turno[] = [];
 
-  constructor(private authService: AuthService, private storageService: StorageService, private _firestoreService: FirestoreService) {}
+  constructor(private authService: AuthService, private storageService: StorageService, private _firestoreService: FirestoreService, private _mensajesService: MensajesService) {}
 
   /**
    * Obtiene el usuario autenticado, establece la URL de la imagen de perfil y configura el formulario de disponibilidad si el usuario es un especialista.
@@ -33,7 +40,10 @@ export class MiPerfilPageComponent implements OnInit {
     this.usuario = await this.authService.obtenerUsuario(); // Obtener datos del usuario autenticado
     const informacionFoto = this.obtenerAccesoFoto();
     this.imagenUrl = await this.storageService.obtenerUrlImagen(informacionFoto.nombreCarpeta, informacionFoto.nombreFoto);
-    if (this.usuario.rol == "paciente") this.obtenerHistoriaPaciente();
+    if (this.usuario.rol == "paciente") {
+      this.obtenerHistoriaPaciente()
+      this.extraerEspecialidades();
+    }
   }
 
   /**
@@ -111,4 +121,78 @@ export class MiPerfilPageComponent implements OnInit {
     // Descargar el PDF
     doc.save(`Historia_Clinica_${this.historiaPaciente.nombrePaciente}.pdf`);
   }
+
+    /**
+   * Extrae todas las especialidades únicas de las atenciones en la historia clínica.
+   */
+    private async extraerEspecialidades() {
+      const filtros = [
+        {
+          campo: "idPaciente",
+          operador: "==" as WhereFilterOp,
+          valor: this.usuario.id!,
+        },
+        {
+          campo: "estado",
+          operador: "==" as WhereFilterOp,
+          valor: "realizado",
+        }
+      ];
+
+      const turnos: Turno[] = await this._firestoreService.obtenerDocumentosConFiltros("turnos", filtros);
+      const especialidadesSet = new Set(
+        turnos.map(turno => turno.especialidad)
+      );
+      this.turnos = turnos;
+      this.especialidades = Array.from(especialidadesSet);
+    }
+  
+    /**
+     * Genera un PDF con las atenciones realizadas en una especialidad específica.
+     */
+    public generarPdfPorEspecialidad() {
+      if (!this.especialidadSeleccionada) {
+        this._mensajesService.lanzarNotificacionErrorCentro('Debes elegir una especialidad para descargar.');
+        return;
+      }
+  
+      const atencionesFiltradas = this.turnos.filter(
+        turno => turno.especialidad === this.especialidadSeleccionada
+      );
+
+      if (atencionesFiltradas.length === 0) {
+        this._mensajesService.lanzarNotificacionErrorCentro('No se encontraron atenciones para esta especialidad.');
+        return;
+      }
+  
+      const doc = new jsPDF();
+      const fechaEmision = new Date().toLocaleDateString();
+      const img = new Image();
+      img.src = "/logo_clinica.png";
+  
+      // Logo e información básica
+      doc.addImage(img, 'PNG', 10, 10, 30, 30);
+      doc.setFontSize(16);
+      doc.text('Informe de Atenciones por Especialidad', 50, 20);
+      doc.setFontSize(10);
+      doc.text(`Fecha de emisión: ${fechaEmision}`, 50, 30);
+      doc.text(`Especialidad: ${this.especialidadSeleccionada}`, 10, 50);
+  
+      // Tabla de atenciones
+      const rows = atencionesFiltradas.map(atencion => [
+        atencion.fecha,
+        atencion.nombreEspecialista,
+        atencion.comentariosEspecialista?.diagnostico || 'Sin diagnóstico',
+        atencion.comentariosEspecialista?.comentario || 'Sin comentario'
+      ]);
+  
+      autoTable(doc, {
+        head: [['Fecha', 'Especialista', 'Diagnóstico', 'Comentario']],
+        body: rows,
+        startY: 70,
+      });
+  
+      // Descargar el archivo
+      doc.save(`Atenciones_${this.usuario.informacion.nombre}_${this.usuario.informacion.apellido}_${this.especialidadSeleccionada}.pdf`);
+    }
 }

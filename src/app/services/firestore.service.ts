@@ -69,7 +69,7 @@ export class FirestoreService {
     return data;
   }
 
-  public async obtenerDocumentosConFiltros(nombreColeccion: string, condiciones: { campo: string; operador: WhereFilterOp; valor: any }[], limite: number) {
+  public async obtenerDocumentosConFiltros(nombreColeccion: string, condiciones: { campo: string; operador: WhereFilterOp; valor: any }[], limite?: number) {
     const colRef = collection(this._firestore, nombreColeccion);
     
     let q = query(colRef);
@@ -77,7 +77,7 @@ export class FirestoreService {
       q = query(q, where(condicion.campo, condicion.operador, condicion.valor));
     });
     
-    if (limite > 0) {
+    if (limite && limite > 0) {
       q = query(q, limit(limite));
     }
   

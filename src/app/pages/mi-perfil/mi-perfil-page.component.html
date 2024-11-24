@@ -22,14 +22,43 @@
     <div *ngIf="this.usuario && this.usuario.rol == 'paciente' && this.historiaPaciente">
       <hr>
       <tabla-historia-clinica [historiaPaciente]="this.historiaPaciente"></tabla-historia-clinica>
-      <div class="d-flex justify-content-center mt-1">
-        <button class="btn btn-dark w-50" (click)="generarPdfHistoriaClinica()">Descargar historia clínica en PDF</button>
+    
+      <!-- Contenedor principal -->
+      <div>
+        <div class="row justify-content-center">
+          <!-- Descargar historia clínica completa -->
+          <div class="col-md-10 mb-3 text-center">
+            <button class="btn btn-dark w-100" (click)="generarPdfHistoriaClinica()">Descargar historia clínica completa</button>
+          </div>
+        </div>
+        <hr>
+        <h2 class="text-center mb-4">Descarga completa de turnos por especialidad</h2>
+        <div class="row justify-content-center align-items-center">
+          <!-- Selector de especialidad -->
+          <div class="col-md-3 text-end">
+            <label for="especialidad" class="form-label">
+              <strong>Seleccione una especialidad:</strong>
+            </label>
+          </div>
+          <div class="col-md-3">
+            <select id="especialidad" class="form-select" [(ngModel)]="especialidadSeleccionada">
+              <option *ngFor="let especialidad of especialidades" [value]="especialidad">
+                {{ especialidad }}
+              </option>
+            </select>
+          </div>
+          <!-- Botón de descarga por especialidad -->
+          <div class="col-md-4">
+            <button class="btn btn-dark w-100" (click)="generarPdfPorEspecialidad()">Descargar por especialidad</button>
+          </div>
+        </div>
       </div>
     </div>
+    
   
     <!-- Disponibilidad Horaria del Especialista -->
     <div *ngIf="this.usuario && this.usuario.rol == 'especialista'" class="card col-6 mx-auto">
       <perfil-configuracion-especialista [usuario]="this.usuario"></perfil-configuracion-especialista>
-    </div>
+    </div>   
   </div>
 </div>
