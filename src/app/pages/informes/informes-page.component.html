@@ -16,6 +16,10 @@
             <h2 class="text-subtitle ps-2">Turnos por día</h2>
             <informe-turnos-por-dia [turnos]="turnos"></informe-turnos-por-dia>
         </div>
+        <div class="col-12" *ngIf="turnos">
+            <h2 class="text-subtitle ps-2">Turnos por médico</h2>
+            <informe-turnos-por-medico-en-lapso [turnos]="turnos"></informe-turnos-por-medico-en-lapso>
+        </div>
     </div>
 </div>
 
