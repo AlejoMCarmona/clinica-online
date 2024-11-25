@@ -4,7 +4,7 @@
         <p class="text-center">¡Bienvenido/a a la sección de informes!</p>
         <p class="text-center">Desde aquí podrás observar las estadísticas más relevantes de la clínica.</p>
         <p class="text-center">¿Quieres descargar estos informes?</p>
-        <button class="btn btn-dark w-50 mx-auto" (click)="descargarPDF()">Descargar PDF</button>
+        <button class="btn btn-dark w-50 mx-auto" (click)="descargarPDF()">Descargar en formato PDF</button>
     </div>
     <div class="row border p-4">
         <div class="col-12 my-2" *ngIf="turnos">
@@ -38,7 +38,7 @@
         <div class="col-12 my-2">
             <h2 class="text-subtitle text-center ps-2">Ingresos al sistema</h2>
             <div class="d-flex justify-content-center">
-                <informe-logs id="ingresos"></informe-logs>
+                <informe-logs id="ingresos-al-sistema"></informe-logs>
             </div>
         </div>
     </div>

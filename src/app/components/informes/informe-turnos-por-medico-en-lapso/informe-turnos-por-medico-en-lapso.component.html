@@ -1,16 +1,25 @@
-<div class="chart-container d-flex flex-column justify-content-center w-100 h-100">
+<div class="chart-container d-flex flex-column justify-content-center w-100 h-100 shadow ">
     <ngx-charts-pie-chart
-    [results]="dataGrafico"
-    [view]="view"
-    [scheme]="'cool'"
-    [legend]="false"
-    [labels]="true"
-    [doughnut]="false"
-    [explodeSlices]="false"
-    [animations]="true">
-  </ngx-charts-pie-chart>
+        [results]="dataGrafico"
+        [view]="view"
+        [scheme]="'cool'"
+        [legend]="false"
+        [labels]="true"
+        [doughnut]="false"
+        [explodeSlices]="false"
+        [animations]="true"
+        (labelFormatting)="formatearLabel($event)">
+    </ngx-charts-pie-chart>
 
-    <div class="input-group row d-flex justify-content-center">
+    <div class="custom-legend">
+        <ul>
+            <li *ngFor="let item of dataGrafico">
+                <span class="legend-item mx-auto text-start">- {{ item.name }}: {{ item.value }}</span>             
+            </li>
+        </ul>
+    </div>
+
+    <div class="input-group row d-flex justify-content-center mb-4">
         <div class="col-3">
             <label for="fechaInicio">Fecha de inicio</label>
             <input type="date" id="fechaInicio" class="form-control" name="inicio" min="2024-01-01" max="{{this.fechaFin}}" (change)="generarDatosGrafico()" [(ngModel)]="fechaInicio" data-date-format="YYYY-MM-DD"/>

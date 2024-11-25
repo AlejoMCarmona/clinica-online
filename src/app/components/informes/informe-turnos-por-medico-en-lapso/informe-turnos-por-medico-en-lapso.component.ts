@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { Color, ColorHelper, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 import { FormsModule } from '@angular/forms';
 import { LogTurno } from '../../../models/log-turno.interface';
 
@@ -18,6 +18,12 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
   public fechaFin!: string;
   public dataGrafico: any[] = [];
   public view: [number, number] = [700, 400];
+  private colorScheme: Color = {
+    name: 'customScheme',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'], // Colores de las porciones
+  };
 
   ngOnInit(): void {
     this.fechaInicio = this.cambiarFecha(new Date(Date.now()), -14);
@@ -44,8 +50,6 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
       return fechaTurno >= inicio && fechaTurno <= fin && (turno.estadoNuevo === this.estado);
     });
 
-    console.log(turnosFiltrados);
-
     const turnosPorMedico = turnosFiltrados.reduce((acc, turno) => {
       acc[turno.nombreEspecialista] = (acc[turno.nombreEspecialista] || 0) + 1;
       return acc;
@@ -55,5 +59,15 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
       name: nombreEspecialista,
       value: cantidad
     }));
+  }
+
+  public formatearLabel(cantidad: any): string {
+    return `${cantidad}`;
+  }
+
+  public getColor(nombre: string): string {
+    this.dataGrafico.forEach(dg => console.log(JSON.stringify(dg))); 
+    const colorHelper = new ColorHelper(this.colorScheme, ScaleType.Ordinal, this.dataGrafico.map(d => d.name), this.colorScheme);
+    return colorHelper.getColor(nombre);
   }
 }

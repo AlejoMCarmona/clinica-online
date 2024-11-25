@@ -1,0 +1,10 @@
+.custom-legend ul {
+    list-style: none;
+    padding: 0;
+}
+
+.custom-legend li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
