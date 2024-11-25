@@ -10,14 +10,13 @@ import { FiltroTurnosEspecialistaComponent } from '../filtro-turnos-especialista
 import { FinalizarTurnoComponent } from '../finalizar-turno/finalizar-turno.component';
 import { Unsubscribe } from '@angular/fire/auth';
 import { HistoriaClinica, HistoriaPaciente } from '../../../models/historia-paciente.interface';
-import { LogTurno } from '../../../models/log-turno.interface';
-import { RouterTestingHarness } from '@angular/router/testing';
 import { LogService } from '../../../services/log.service';
+import { OrdenarPorFechaPipe } from '../../../pipes/ordenar-por-fecha.pipe';
 
 @Component({
   selector: 'listado-turnos-especialista',
   standalone: true,
-  imports: [ CommonModule, FormsModule, FiltroTurnosEspecialistaComponent,FinalizarTurnoComponent ],
+  imports: [ CommonModule, FormsModule, FiltroTurnosEspecialistaComponent,FinalizarTurnoComponent, OrdenarPorFechaPipe ],
   templateUrl: './listado-turnos-especialista.component.html',
   styleUrl: './listado-turnos-especialista.component.css'
 })
@@ -31,6 +30,7 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   public historialesPacientes: HistoriaPaciente[] = [];
   public modalFinalizarTurno: boolean = false;
   public desuscripcion!: Unsubscribe
+  public ordenAscendente: boolean = false;
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef, private _logService: LogService) {}
 
@@ -180,5 +180,10 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
 
   public cerrarModal() {
     this.modalFinalizarTurno = false;
+  }
+
+  // Cambiar el orden de los turnos
+  public cambiarOrden() {
+    this.ordenAscendente = !this.ordenAscendente;
   }
 }

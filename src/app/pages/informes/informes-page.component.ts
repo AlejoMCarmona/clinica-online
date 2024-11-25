@@ -25,6 +25,7 @@ import domtoimage from 'dom-to-image';
   templateUrl: './informes-page.component.html',
   styleUrl: './informes-page.component.css',
 })
+
 export class InformesPageComponent implements OnInit {
   public turnos!: Turno[];
   public logTurnos!: LogTurno[];

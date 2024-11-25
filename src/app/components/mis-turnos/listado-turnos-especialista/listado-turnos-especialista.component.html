@@ -1,5 +1,12 @@
 <div class="container col-10">
-  <filtro-turnos-especialista [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos-especialista>
+  <div class="row">
+    <div class="col-11">
+      <filtro-turnos-especialista [turnos]="listadoTurnosConAcciones" (listaFiltrada)="turnosFiltrados = $event"></filtro-turnos-especialista>
+    </div>
+    <div class="col-1">
+      <button class="btn btn-dark w-100" (click)="cambiarOrden()"><i class="bi bi-arrow-down-up"></i></button>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr>
@@ -12,7 +19,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let turno of turnosFiltrados">
+      <tr *ngFor="let turno of turnosFiltrados | ordenarPorFecha: ordenAscendente">
         <td>{{ turno.especialidad }}</td>
         <td>{{ turno.nombrePaciente }}</td>
         <td>{{ turno.fecha }}</td>

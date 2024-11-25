@@ -10,11 +10,12 @@ import { TurnoConAcciones } from '../interfaces/turno-con-acciones.interface';
 import { Unsubscribe } from '@angular/fire/auth';
 import { HistoriaClinica, HistoriaPaciente } from '../../../models/historia-paciente.interface';
 import { LogService } from '../../../services/log.service';
+import { OrdenarPorFechaPipe } from '../../../pipes/ordenar-por-fecha.pipe';
 
 @Component({
   selector: 'listado-turnos-paciente',
   standalone: true,
-  imports: [CommonModule, FormsModule, FiltroTurnosPacienteComponent],
+  imports: [CommonModule, FormsModule, FiltroTurnosPacienteComponent, OrdenarPorFechaPipe ],
   templateUrl: './listado-turnos-paciente.component.html',
   styleUrl: './listado-turnos-paciente.component.css'
 })
@@ -29,6 +30,7 @@ export class ListadoTurnosPacienteComponent implements OnInit, OnDestroy {
   public calificacionAtencion: number | null = null;
   private desuscripcion!: Unsubscribe;
   public historialesPacientes: HistoriaPaciente[] = [];
+  public ordenAscendente: boolean = false;
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef, private _logService: LogService) {}
 
@@ -177,4 +179,9 @@ export class ListadoTurnosPacienteComponent implements OnInit, OnDestroy {
       this._mensajesService.lanzarMensajeError("Error", "Hubo un problema al guardar la calificación");
     }
   }
+
+    // Cambiar el orden de los turnos
+    public cambiarOrden() {
+      this.ordenAscendente = !this.ordenAscendente;
+    }
 }
