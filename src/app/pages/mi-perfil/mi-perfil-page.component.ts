@@ -14,11 +14,12 @@ import { Turno } from '../../models/turno.interface';
 import { FormsModule } from '@angular/forms';
 import { MensajesService } from '../../services/mensajes.service';
 import { WhereFilterOp } from '@angular/fire/firestore';
+import { OcultarPalabraPipe } from '../../pipes/ocultar-palabra.pipe';
 
 @Component({
   selector: 'app-mi-perfil',
   standalone: true,
-  imports: [ CommonModule, PerfilConfiguracionEspecialistaComponent, TablaHistoriaClinicaComponent, FormsModule ],
+  imports: [ CommonModule, PerfilConfiguracionEspecialistaComponent, TablaHistoriaClinicaComponent, FormsModule, OcultarPalabraPipe ],
   templateUrl: './mi-perfil-page.component.html',
   styleUrl: './mi-perfil-page.component.css'
 })
@@ -30,6 +31,8 @@ export class MiPerfilPageComponent implements OnInit {
   public especialidadSeleccionada: string = '';
   public especialidades: string[] = [];
   private turnos: Turno[] = [];
+  public ocultarCorreo: boolean = true;
+  public ocultarDNI: boolean = true;
 
   constructor(private authService: AuthService, private storageService: StorageService, private _firestoreService: FirestoreService, private _mensajesService: MensajesService) {}
 

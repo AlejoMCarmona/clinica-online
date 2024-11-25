@@ -9,11 +9,12 @@ import { FormsModule } from '@angular/forms';
 import { FiltroTurnosPacienteComponent } from '../../mis-turnos/filtro-turnos-paciente/filtro-turnos-paciente.component';
 import { Unsubscribe } from '@angular/fire/auth';
 import { LogService } from '../../../services/log.service';
+import { OrdenarPorFechaPipe } from '../../../pipes/ordenar-por-fecha.pipe';
 
 @Component({
   selector: 'listado-turnos-admin',
   standalone: true,
-  imports: [ CommonModule, FiltroTurnosPacienteComponent, FormsModule ],
+  imports: [ CommonModule, FiltroTurnosPacienteComponent, FormsModule, OrdenarPorFechaPipe ],
   templateUrl: './listado-turnos-admin.component.html',
   styleUrl: './listado-turnos-admin.component.css'
 })
@@ -24,6 +25,7 @@ export class ListadoTurnosAdminComponent implements OnInit, OnDestroy {
   public turnoSeleccionado!: Turno;
   public motivoCancelacion: string = "";
   public desuscripcion!: Unsubscribe;
+  public ordenAscendente: boolean = false;
 
   constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef, private _logService: LogService) {}
 
@@ -94,5 +96,9 @@ export class ListadoTurnosAdminComponent implements OnInit, OnDestroy {
     } catch (error) {
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer cancelar el turno");
     }
+  }
+
+  public cambiarOrden() {
+    this.ordenAscendente = !this.ordenAscendente;
   }
 }

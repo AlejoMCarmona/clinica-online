@@ -8,9 +8,25 @@
         <div class="col-6">
           <p><strong>Nombre:</strong> {{ usuario.informacion.nombre }}</p>
           <p><strong>Apellido:</strong> {{ usuario.informacion.apellido }}</p>
-          <p><strong>Email:</strong> {{ usuario.email }}</p>         
+          <div class="row align-items-center">
+            <div class="col-8">
+              <p><strong>Email:</strong> {{ ocultarCorreo ? (usuario.email | ocultarPalabra ) : usuario.email }} </p>
+            </div>
+            <div class="col-auto">
+              <button *ngIf="!this.ocultarCorreo" class="btn btn-dark" (click)="ocultarCorreo = !ocultarCorreo"><i class="bi bi-eye-slash"></i></button>
+              <button *ngIf="this.ocultarCorreo" class="btn btn-dark" (click)="ocultarCorreo = !ocultarCorreo"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
           <p><strong>Edad:</strong> {{ usuario.informacion.edad }}</p>         
-          <p><strong>DNI:</strong> {{ usuario.informacion.dni }}</p>         
+          <div class="row align-items-center">
+            <div class="col-8">
+              <p><strong>DNI:</strong> {{ ocultarDNI ? (usuario.informacion.dni | ocultarPalabra : false ) : usuario.informacion.dni }} </p>
+            </div>
+            <div class="col-auto">
+              <button *ngIf="!this.ocultarDNI" class="btn btn-dark" (click)="ocultarDNI = !ocultarDNI"><i class="bi bi-eye-slash"></i></button>
+              <button *ngIf="this.ocultarDNI" class="btn btn-dark" (click)="ocultarDNI = !ocultarDNI"><i class="bi bi-eye"></i></button>
+            </div>
+          </div> 
         </div>
         <!-- Muestra la imagen del usuario si existe -->
         <div class="col-6 d-flex justify-content-end" *ngIf="imagenUrl">

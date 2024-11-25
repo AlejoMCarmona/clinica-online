@@ -1,21 +1,26 @@
 <div class="container mt-4 w-100 shadow">
-    <div class="table-responsive scrolleable p-2 border rounded">
-      <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-          <tr>
-            <th>Usuario (Email)</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let log of logs">
-            <td>{{ log.emailUsuario }}</td>
-            <td>{{ log.fecha }}</td>
-            <td>{{ log.hora }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="d-flex justify-content-end mb-2">
+    <button class="btn btn-dark w-100" (click)="alternarOrden()">
+      Orden {{ ordenAscendente ? 'ascendente' : 'descendente' }}
+    </button>
   </div>
+  <div class="table-responsive scrolleable p-2 border rounded">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Usuario (Email)</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of logs | ordenarPorFecha : ordenAscendente">
+          <td>{{ log.emailUsuario }}</td>
+          <td>{{ log.fecha }}</td>
+          <td>{{ log.hora }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
   

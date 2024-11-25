@@ -141,7 +141,6 @@ export class NuevoTurnoPageComponent {
       this._router.navigate(["home"]);
     }
     catch (error) {
-      console.log(error);
       this._mensajesService.lanzarMensajeError(":)", "Hubo un error durante la creación de tu turno, reintentalo más tarde.");
     }
   }

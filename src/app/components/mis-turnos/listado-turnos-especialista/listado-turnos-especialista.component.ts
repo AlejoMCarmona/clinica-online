@@ -148,7 +148,6 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue aceptado");
     } catch (error) {
-      console.log(error)
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer aceptar el turno");
     }
   }

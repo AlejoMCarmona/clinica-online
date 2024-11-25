@@ -28,8 +28,6 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
   ngOnInit(): void {
     this.fechaInicio = this.cambiarFecha(new Date(Date.now()), -14);
     this.fechaFin = this.cambiarFecha(new Date(Date.now()), 14);
-    console.log(this.fechaInicio);
-    console.log(this.fechaFin);
     this.generarDatosGrafico();
   }
 
@@ -66,7 +64,6 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
   }
 
   public getColor(nombre: string): string {
-    this.dataGrafico.forEach(dg => console.log(JSON.stringify(dg))); 
     const colorHelper = new ColorHelper(this.colorScheme, ScaleType.Ordinal, this.dataGrafico.map(d => d.name), this.colorScheme);
     return colorHelper.getColor(nombre);
   }

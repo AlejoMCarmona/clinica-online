@@ -7,11 +7,12 @@ import { Especialista, InformacionEspecialidades } from '../../../models/especia
 import { Turno } from '../../../models/turno.interface';
 import { FirestoreService } from '../../../services/firestore.service';
 import { DisableSelectionDirective } from '../../../directives/disable-selection.directive';
+import { HoraPipe } from '../../../pipes/hora.pipe';
 
 @Component({
   selector: 'lista-turnos',
   standalone: true,
-  imports: [ CommonModule, DisableSelectionDirective ],
+  imports: [ CommonModule, DisableSelectionDirective, HoraPipe ],
   outputs: [ 'filaSeleccionada' ],
   templateUrl: './lista-turnos.component.html',
   styleUrl: './lista-turnos.component.css'
@@ -111,12 +112,6 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
     const fechaHora = new Date(fechaBase);
     fechaHora.setHours(horas, minutos, 0, 0);
     return fechaHora;
-  }
-
-  public formatearHora(horaCompleta: string): string {
-    // Separamos la hora, minutos y segundos
-    const [hora, minutos] = horaCompleta.split(':');
-    return `${hora}:${minutos}`;  // Devolvemos el formato "hh:mm"
   }
 
   private obtenerDiasTrabajo(especialista: Especialista, especialidadNombre: string): number[] {
