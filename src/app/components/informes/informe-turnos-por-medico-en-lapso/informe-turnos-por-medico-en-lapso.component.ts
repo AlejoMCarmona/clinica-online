@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Turno } from '../../../models/turno.interface';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FormsModule } from '@angular/forms';
+import { LogTurno } from '../../../models/log-turno.interface';
 
 @Component({
   selector: 'informe-turnos-por-medico-en-lapso',
@@ -12,7 +12,8 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
-  @Input() turnos!: Turno[];
+  @Input() logTurnos!: LogTurno[];
+  @Input() estado!: string;
   public fechaInicio!: string;
   public fechaFin!: string;
   public dataGrafico: any[] = [];
@@ -21,6 +22,8 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
   ngOnInit(): void {
     this.fechaInicio = this.cambiarFecha(new Date(Date.now()), -14);
     this.fechaFin = this.cambiarFecha(new Date(Date.now()), 14);
+    console.log(this.fechaInicio);
+    console.log(this.fechaFin);
     this.generarDatosGrafico();
   }
 
@@ -34,12 +37,14 @@ export class InformeTurnosPorMedicoEnLapsoComponent implements OnInit {
   }
 
   public generarDatosGrafico(): void {
-    const turnosFiltrados = this.turnos.filter(turno => {
+    const turnosFiltrados = this.logTurnos.filter(turno => {
       const fechaTurno = new Date(turno.fecha).getTime();
       const inicio = new Date(this.fechaInicio).getTime();
       const fin = new Date(this.fechaFin).getTime();
-      return fechaTurno >= inicio && fechaTurno <= fin && (turno.estado === 'solicitado' || turno.estado === 'realizado');
+      return fechaTurno >= inicio && fechaTurno <= fin && (turno.estadoNuevo === this.estado);
     });
+
+    console.log(turnosFiltrados);
 
     const turnosPorMedico = turnosFiltrados.reduce((acc, turno) => {
       acc[turno.nombreEspecialista] = (acc[turno.nombreEspecialista] || 0) + 1;

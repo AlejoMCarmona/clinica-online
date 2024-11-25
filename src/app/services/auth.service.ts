@@ -5,6 +5,7 @@ import { FirestoreService } from './firestore.service';
 import { Usuario } from '../models/usuarios.interface';
 import { MensajesService } from './mensajes.service';
 import { LogIngreso } from '../models/log-ingreso.interface';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ import { LogIngreso } from '../models/log-ingreso.interface';
 export class AuthService {
   private usuarioAutenticado: BehaviorSubject<string> = new BehaviorSubject<string>(""); // Almacena el email del usuario autenticado
 
-  constructor(private auth: Auth, private _fire: FirestoreService, private _mensajesService: MensajesService) {}
+  constructor(private auth: Auth, private _fire: FirestoreService, private _mensajesService: MensajesService, private _logService: LogService) {}
 
   public async iniciarSesion(email: string, password: string): Promise<string | undefined> {
     const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
@@ -34,36 +35,9 @@ export class AuthService {
     }
 
     // Log de inicio de sesión
-    const log: LogIngreso = await this.crearLog(email)
-    await this._fire.subirDocumento(log, "log-ingresos");
+    await this._logService.crearLogIngreso(usuario.id, usuario.email);
 
     return undefined;
-  }
-
-  private async crearLog(email: string) {
-    const idUsuario = await this.obtenerIdUsuario();
-    const log: LogIngreso = {
-      idUsuario: idUsuario,
-      emailUsuario: email,
-      fecha: this.obtenerFechaActual(),
-      hora: this.obtenerHoraActual()
-    }
-    return log;
-  }
-
-  private obtenerFechaActual(): string {
-    const fecha = new Date();
-    const año = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-    const día = String(fecha.getDate()).padStart(2, '0');
-    return `${año}-${mes}-${día}`;
-  }
-
-  private obtenerHoraActual(): string {
-    const fecha = new Date();
-    const horas = String(fecha.getHours()).padStart(2, '0');
-    const minutos = String(fecha.getMinutes()).padStart(2, '0');
-    return `${horas}:${minutos}`;
   }
 
   public async registrarUsuarioConVerificacion(email: string, password: string, usuarioInformacion: Usuario): Promise<string | undefined> {

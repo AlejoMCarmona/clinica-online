@@ -10,6 +10,9 @@ import { FiltroTurnosEspecialistaComponent } from '../filtro-turnos-especialista
 import { FinalizarTurnoComponent } from '../finalizar-turno/finalizar-turno.component';
 import { Unsubscribe } from '@angular/fire/auth';
 import { HistoriaClinica, HistoriaPaciente } from '../../../models/historia-paciente.interface';
+import { LogTurno } from '../../../models/log-turno.interface';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { LogService } from '../../../services/log.service';
 
 @Component({
   selector: 'listado-turnos-especialista',
@@ -29,7 +32,7 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   public modalFinalizarTurno: boolean = false;
   public desuscripcion!: Unsubscribe
 
-  constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
+  constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef, private _logService: LogService) {}
 
   async ngOnInit(): Promise<void> {
     this.historialesPacientes = await this._firestoreService.obtenerDocumentos("historias-pacientes");
@@ -117,10 +120,12 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   public async cancelarTurno() {
     try {
       // Aplico los cambios necesarios en el turno
+      const estadoAnterior = this.turnoSeleccionado.estado;
       this.turnoSeleccionado.estado = "cancelado";
       this.turnoSeleccionado.motivoEstado = this.motivoEstado;
       // Hago la modificación en base de datos
       const { id, ...turnoCancelado} = this.turnoSeleccionado;
+      await this._logService.crearLogTurno(this.turnoSeleccionado, estadoAnterior);
       await this._firestoreService.modificarDocumento("turnos", id!, turnoCancelado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue cancelado");
@@ -133,14 +138,17 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   public async aceptarTurno(turno: Turno) {
     try {
       // Aplico los cambios necesarios en el turno
+      const estadoAnterior = turno.estado;
       turno.estado = "aceptado";
       // Hago la modificación en base de datos
       const { id, ...turnoAceptado } = turno;
+      await this._logService.crearLogTurno(turno, estadoAnterior);
       await this._firestoreService.modificarDocumento("turnos", turno.id || "", turnoAceptado);
       // Actualizo su estado en el listado de turnos
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue aceptado");
     } catch (error) {
+      console.log(error)
       this._mensajesService.lanzarMensajeError(":(", "Hubo un error al querer aceptar el turno");
     }
   }
@@ -149,10 +157,12 @@ export class ListadoTurnosEspecialistaComponent implements OnInit, OnDestroy {
   public async rechazarTurno() {
     try {
       // Aplico los cambios necesarios en el turno
+      const estadoAnterior = this.turnoSeleccionado.estado;
       this.turnoSeleccionado.estado = "rechazado";
       this.turnoSeleccionado.motivoEstado = this.motivoEstado;
       // Hago la modificación en base de datos
       const { id, ...turnoModificado } = this.turnoSeleccionado;
+      await this._logService.crearLogTurno(this.turnoSeleccionado, estadoAnterior);
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
       // Actualizo su estado en el listado de turnos
       // Envío un mensaje de éxito

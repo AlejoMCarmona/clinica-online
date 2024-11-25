@@ -8,6 +8,7 @@ import { MensajesService } from '../../../services/mensajes.service';
 import { FormsModule } from '@angular/forms';
 import { FiltroTurnosPacienteComponent } from '../../mis-turnos/filtro-turnos-paciente/filtro-turnos-paciente.component';
 import { Unsubscribe } from '@angular/fire/auth';
+import { LogService } from '../../../services/log.service';
 
 @Component({
   selector: 'listado-turnos-admin',
@@ -24,7 +25,7 @@ export class ListadoTurnosAdminComponent implements OnInit, OnDestroy {
   public motivoCancelacion: string = "";
   public desuscripcion!: Unsubscribe;
 
-  constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef) {}
+  constructor(private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private cdr: ChangeDetectorRef, private _logService: LogService) {}
 
   async ngOnInit(): Promise<void> {
     this.desuscripcion = this._firestoreService.obtenerDocumentosEnTiempoReal<Turno>('turnos', '', '',
@@ -81,10 +82,12 @@ export class ListadoTurnosAdminComponent implements OnInit, OnDestroy {
   public async cancelarTurno() {
     try {
       // Aplico los cambios necesarios en el turno
+      const estadoAnterior = this.turnoSeleccionado.estado;
       this.turnoSeleccionado.estado = "cancelado";
       this.turnoSeleccionado.motivoEstado = this.motivoCancelacion;
       // Hago la modificación en base de datos
       const { id, ...turnoModificado } = this.turnoSeleccionado;
+      await this._logService.crearLogTurno(this.turnoSeleccionado, estadoAnterior);
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoModificado);
       // Envío un mensaje de éxito
       this._mensajesService.lanzarMensajeExitoso(":)", "El turno fue cancelado");

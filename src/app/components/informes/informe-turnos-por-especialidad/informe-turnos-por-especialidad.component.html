@@ -1,13 +1,14 @@
-<div class="chart-container">
-    <ngx-charts-bar-vertical
-      [view]="view"
-      [scheme]="'fire'"
-      [results]="chartData"
-      [xAxis]="true"
-      [yAxis]="true"
-      [legend]="false"
-      [xAxisLabel]="'Especialidades'"
-      [yAxisLabel]="'Cantidad de turnos'"
-      [barPadding]="10">
-    </ngx-charts-bar-vertical>
-  </div>
+<div class="chart-container w-100 h-100">
+  <ngx-charts-bar-vertical
+    [view]="view"
+    [scheme]="'fire'"
+    [results]="chartData"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="false"
+    [xAxisLabel]="'Especialidades'"
+    [yAxisLabel]="'Cantidad de turnos'"
+    [barPadding]="10"
+    [xAxisTickFormatting]="formateoEspecialidades">
+  </ngx-charts-bar-vertical>
+</div>

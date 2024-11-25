@@ -13,7 +13,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 export class InformeTurnosPorDiaComponent implements OnInit {
   @Input() turnos!: Turno[];
   public chartData: { name: string; value: number }[] = [];
-  public view: [number, number] = [700, 300]; // Tamaño del gráfico
+  public view: [number, number] = [1000, 0]; // Tamaño del gráfico
 
   ngOnInit(): void {
     this.cargarDatos();

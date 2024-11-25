@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { InformeTurnosPorDiaComponent } from '../../components/informes/informe-turnos-por-dia/informe-turnos-por-dia.component';
 import { InformeTurnosPorMedicoEnLapsoComponent } from '../../components/informes/informe-turnos-por-medico-en-lapso/informe-turnos-por-medico-en-lapso.component';
 import { FormsModule } from '@angular/forms';
+import { LogTurno } from '../../models/log-turno.interface';
 
 @Component({
   selector: 'app-informes',
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 
 export class InformesPageComponent implements OnInit {
   public turnos!: Turno[];
+  public logTurnos!: LogTurno[];
   public fechaInicio!: Date;
   public fechaFin!: Date;
   
@@ -25,5 +27,6 @@ export class InformesPageComponent implements OnInit {
   
   async ngOnInit() {
     this.turnos = await this.firestoreService.obtenerDocumentos("turnos");
+    this.logTurnos = await this.firestoreService.obtenerDocumentos("log-turnos");
   }
 }

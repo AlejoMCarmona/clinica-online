@@ -5,6 +5,7 @@ import { Turno } from '../../../models/turno.interface';
 import { FirestoreService } from '../../../services/firestore.service';
 import { MensajesService } from '../../../services/mensajes.service';
 import { HistoriaClinica, HistoriaPaciente } from '../../../models/historia-paciente.interface';
+import { LogService } from '../../../services/log.service';
 
 @Component({
   selector: 'finalizar-turno',
@@ -25,7 +26,7 @@ export class FinalizarTurnoComponent {
   @Output() cerrar: EventEmitter<void> = new EventEmitter<void>(); // Emite un evento cuando el formulario fue enviado.
   @Output() turnoEnviado: EventEmitter<Turno> = new EventEmitter<Turno>(); // Emite un evento cuando el formulario fue enviado.
 
-  constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private _mensajesService: MensajesService) {
+  constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private _mensajesService: MensajesService, private _logService: LogService) {
     this.formularioHistoriaClinica = this.fb.group({
       altura: ['', Validators.required],
       peso: ['', Validators.required],
@@ -118,6 +119,7 @@ export class FinalizarTurnoComponent {
   public async finalizarTurnoYHistoria(): Promise<void> {
     try {
       // Aplico los cambios necesarios en el turno
+      const estadoAnterior = this.turnoSeleccionado.estado;
       this.turnoSeleccionado.estado = "realizado";
       if (!this.turnoSeleccionado.comentariosEspecialista) this.turnoSeleccionado.comentariosEspecialista = {}; 
       this.turnoSeleccionado.comentariosEspecialista.comentario = this.comentario;
@@ -128,6 +130,7 @@ export class FinalizarTurnoComponent {
       historiaClinica.idTurno = this.turnoSeleccionado.id!;
       historiaClinica.fechaTurno = this.turnoSeleccionado.fecha;
       // Hago las modificaciones en base de datos
+      await this._logService.crearLogTurno(this.turnoSeleccionado, estadoAnterior);
       await this._firestoreService.modificarDocumento("turnos", this.turnoSeleccionado.id || "", turnoFinalizado);
       await this.cargarHistoriaPaciente(this.turnoSeleccionado, historiaClinica);
       this.cerrarModal();

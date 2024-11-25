@@ -14,7 +14,7 @@ export class InformeTurnosPorEspecialidadComponent implements OnInit {
   @Input() turnos!: Turno[];
 
   public chartData: { name: string; value: number }[] = [];
-  public view: [number, number] = [0, 300]; // Tamaño del gráfico
+  public view: [number, number] = [0, 0]; // Tamaño del gráfico
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -33,5 +33,9 @@ export class InformeTurnosPorEspecialidadComponent implements OnInit {
       acc[turno.especialidad] = (acc[turno.especialidad] || 0) + 1;
       return acc;
     }, {} as { [especialidad: string]: number });
+  }
+
+  public formateoEspecialidades(label: string): string {
+    return label.length > 10 ? label.slice(0, 10) + '...' : label;
   }
 }

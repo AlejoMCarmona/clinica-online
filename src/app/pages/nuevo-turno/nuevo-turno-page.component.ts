@@ -14,6 +14,7 @@ import { ListaTurnosComponent } from '../../components/nuevo-turno/lista-turnos/
 import { Horario } from '../../components/nuevo-turno/interfaces/horario.interface';
 import { ListaPacientesComponent } from '../../components/nuevo-turno/lista-pacientes/lista-pacientes.component';
 import { InformacionEspecialidades } from '../../models/especialista.interface';
+import { LogService } from '../../services/log.service';
 
 @Component({
   selector: 'app-nuevo-turno',
@@ -27,7 +28,7 @@ export class NuevoTurnoPageComponent {
   public turnoForm!: FormGroup;
   public usuarioRol!: string;
 
-  constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private _authService: AuthService, private _mensajesService: MensajesService, private _router: Router) {
+  constructor(private fb: FormBuilder, private _firestoreService: FirestoreService, private _authService: AuthService, private _mensajesService: MensajesService, private _router: Router, private _logService: LogService) {
     this.turnoForm = this.fb.group({
       especialidad: ['', Validators.required],
       especialista: ['', Validators.required],
@@ -132,12 +133,15 @@ export class NuevoTurnoPageComponent {
         idPaciente: paciente?.id!,
         nombrePaciente: paciente?.informacion.nombre! + " " + paciente?.informacion.apellido!
       }
-
-      await this._firestoreService.subirDocumento(nuevoTurno, "turnos");
+      
+      const resultado = await this._firestoreService.subirDocumento(nuevoTurno, "turnos");
+      nuevoTurno.id = resultado.id;
+      await this._logService.crearLogTurno(nuevoTurno, "");
       this._mensajesService.lanzarMensajeExitoso(":)", "¡Tu turno fue creado con éxito!");
       this._router.navigate(["home"]);
     }
     catch (error) {
+      console.log(error);
       this._mensajesService.lanzarMensajeError(":)", "Hubo un error durante la creación de tu turno, reintentalo más tarde.");
     }
   }
