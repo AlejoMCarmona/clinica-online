@@ -1,34 +1,44 @@
 <div class="container">
-    <h1 class="text-title text-center">INFORMES</h1>
-    <div class="row">
-        <div class="col-12 mt-2" *ngIf="turnos">
+    <h1 class="text-title text-center mb-2">INFORMES</h1>
+    <div class="d-flex flex-column justify-content-center border rounded mb-2 w-50 mx-auto p-4">
+        <p class="text-center">¡Bienvenido/a a la sección de informes!</p>
+        <p class="text-center">Desde aquí podrás observar las estadísticas más relevantes de la clínica.</p>
+        <p class="text-center">¿Quieres descargar estos informes?</p>
+        <button class="btn btn-dark w-50 mx-auto" (click)="descargarPDF()">Descargar PDF</button>
+    </div>
+    <div class="row border p-4">
+        <div class="col-12 my-2" *ngIf="turnos">
             <h2 class="text-subtitle text-center ps-2">Turnos por día</h2>
             <div class="d-flex justify-content-center">
-                <informe-turnos-por-dia [turnos]="turnos"></informe-turnos-por-dia>
+                <informe-turnos-por-dia [turnos]="turnos" id="turnos-por-dia"></informe-turnos-por-dia>
             </div>
         </div>
-        <div class="col-12 mt-4" *ngIf="turnos">
+        <hr>
+        <div class="col-12 mt-2 mb-4" *ngIf="turnos">
             <h2 class="text-subtitle text-center ps-2"> Turnos por especialidad</h2>
             <div class="d-flex justify-content-center">
-                <informe-turnos-por-especialidad [turnos]="turnos"></informe-turnos-por-especialidad>
+                <informe-turnos-por-especialidad [turnos]="turnos" id="turnos-por-especialidad"></informe-turnos-por-especialidad>
             </div>
         </div>
-        <div class="col-12 mt-4" *ngIf="logTurnos">
+        <hr>
+        <div class="col-12 my-2" *ngIf="logTurnos">
             <h2 class="text-subtitle text-center ps-2">Turnos solicitados por médico</h2>
             <div class="d-flex justify-content-center">
-                <informe-turnos-por-medico-en-lapso [estado]="'solicitado'" [logTurnos]="logTurnos"></informe-turnos-por-medico-en-lapso>
+                <informe-turnos-por-medico-en-lapso [estado]="'solicitado'" [logTurnos]="logTurnos" id="turnos-solicitados-por-medico-en-lapso"></informe-turnos-por-medico-en-lapso>
             </div>
         </div>
-        <div class="col-12 mt-4" *ngIf="logTurnos">
+        <hr>
+        <div class="col-12 my-2" *ngIf="logTurnos">
             <h2 class="text-subtitle text-center ps-2">Turnos realizados por médico</h2>
             <div class="d-flex justify-content-center">
-               <informe-turnos-por-medico-en-lapso [estado]="'realizado'" [logTurnos]="logTurnos"></informe-turnos-por-medico-en-lapso>
+               <informe-turnos-por-medico-en-lapso [estado]="'realizado'" [logTurnos]="logTurnos" id="turnos-realizados-por-medico-en-lapso"></informe-turnos-por-medico-en-lapso>
             </div>
         </div>
-        <div class="col-12 mt-4">
+        <hr>
+        <div class="col-12 my-2">
             <h2 class="text-subtitle text-center ps-2">Ingresos al sistema</h2>
             <div class="d-flex justify-content-center">
-                <informe-logs></informe-logs>
+                <informe-logs id="ingresos"></informe-logs>
             </div>
         </div>
     </div>
