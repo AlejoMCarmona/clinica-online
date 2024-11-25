@@ -8,6 +8,8 @@ import { FirestoreService } from '../../services/firestore.service';
 import { HistoriaPaciente } from '../../models/historia-paciente.interface';
 import { TablaHistoriaClinicaComponent } from '../../components/historia-clinica/tabla-historia-clinica/tabla-historia-clinica.component';
 import { MensajesService } from '../../services/mensajes.service';
+import { Usuario } from '../../models/usuarios.interface';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-usuarios',
@@ -46,5 +48,37 @@ export class UsuariosPageComponent {
 
   public cerrarModalHistoriaClinica(): void {
     this.modalHistoriaClinicaVisible = false;
+  }
+
+  public async descargarExcel() {
+    let datos: any[] = [];
+    const usuarios: Usuario[] = await this._firestoreService.obtenerDocumentos("usuarios");
+
+    if (usuarios.length == 0) {
+      this._mensajesService.lanzarNotificacionErrorCentro("No se pueden descargar los usuarios.");
+      return;
+    }
+
+    datos = usuarios.map(usuario => ({
+      nombre: usuario.informacion.nombre,
+      apellido: usuario.informacion.apellido,
+      email: usuario.email,
+      dni: usuario.informacion.dni,
+      autorizado: usuario.autorizado == true ? "Sí" : "No",
+      rol: usuario.rol
+    }));
+
+    // Crea una worksheet
+    const hojaTrabajo = XLSX.utils.json_to_sheet(datos);
+
+    // Crea workbook y lo agrega
+    const libroTrabajo: XLSX.WorkBook = {
+      Sheets: { Usuarios: hojaTrabajo },
+      SheetNames: ['Usuarios'],
+    };
+
+    // Genera el archivo Excel y lo descarga
+    const nombreArchivo = `usuarios_clinica_online_${Date.now()}.xlsx`;
+    XLSX.writeFile(libroTrabajo, nombreArchivo);
   }
 }

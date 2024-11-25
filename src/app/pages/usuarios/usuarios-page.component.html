@@ -1,5 +1,12 @@
 <div class="container mt-4">
-    <h1 class="text-center text-title text-uppercase">Usuarios</h1>
+    <h1 class="text-center text-title text-uppercase mb-2">Usuarios</h1>
+    <div class="d-flex flex-column justify-content-center border rounded mb-4 w-50 mx-auto p-4">
+        <p class="text-center">¡Bienvenido/a a la sección de usuarios!</p>
+        <p class="text-center">Desde aquí podrás gestionar todos los usuarios de la clínica.</p>
+        <p class="text-center">¿Quieres descargar todos sus detalles?</p>
+        <button class="btn btn-dark w-50 mx-auto" (click)="descargarExcel()">Descargar en formato .xlsx</button>
+    </div>
+    <hr>
     <div class="row justify-content-center mb-2">
         <div class="col-9 mb-5">
             <listado-especialistas></listado-especialistas>
