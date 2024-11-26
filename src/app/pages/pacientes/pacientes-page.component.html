@@ -7,11 +7,11 @@
     </div>
   
     <!-- Lista de pacientes atendidos -->
-    <div class="row" *ngIf="pacientesAtendidos.length > 0">
+    <div class="row d-flex justify-content-center" *ngIf="pacientesAtendidos.length > 0">
       <div class="col-md-5 mb-4" *ngFor="let item of pacientesAtendidos">
         <div class="card h-100 shadow">
           <!-- Imagen del paciente -->
-          <img [src]="item.usuario.imagenUrl" alt="Imagen del usuario" class="card-img-top img-thumbnail mx-auto mt-2" style="width: 300px;object-fit: cover;">       
+          <img [src]="item.usuario.imagenUrl" alt="Imagen del usuario" class="card-img-top img-thumbnail mx-auto mt-2" style="max-width: 300px; max-height: 300px; object-fit: cover;">       
           <!-- Información del paciente -->
           <div class="card-body">
             <h3 class="card-title text-center mb-3">{{ item.usuario.informacion.nombre }} {{ item.usuario.informacion.apellido }}</h3>

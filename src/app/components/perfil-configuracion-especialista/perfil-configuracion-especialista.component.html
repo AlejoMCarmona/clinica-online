@@ -15,8 +15,7 @@
             <div class="col-md-4">
               <label class="form-label">Día:</label>
               <select formControlName="dia" class="form-select">
-                <option *ngFor="let dia of [0, 1, 2, 3, 4, 5, 6]" [value]="dia">{{ ['Domingo', 'Lunes', 'Martes',
-                  'Miércoles', 'Jueves', 'Viernes', 'Sábado'][dia] }}</option>
+                <option *ngFor="let dia of [1, 2, 3, 4, 5, 6]" [value]="dia">{{ ['Domingo', 'Lunes', 'Martes','Miércoles', 'Jueves', 'Viernes', 'Sábado'][dia] }}</option>
               </select>
             </div>
             <div class="col-md-4">

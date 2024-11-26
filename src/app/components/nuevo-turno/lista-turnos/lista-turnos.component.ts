@@ -55,49 +55,65 @@ export class ListaTurnosComponent extends TablaInteractivaBase<Horario> {
       lunesViernes: { desde: '08:00', hasta: '19:00' },
       sabado: { desde: '08:00', hasta: '14:00' }
     };
-  
-    const ahora = new Date(); // Fecha actual para iniciar el cálculo
+
+    const ahora = new Date(); // Fecha y hora actuales
+    const inicioDelDia = new Date(ahora); // Crear una copia de 'ahora' para representar el inicio del día
+    inicioDelDia.setHours(0, 0, 0, 0); // Normalizamos a la medianoche
     const milisegundosEnMinuto = 60000;
-  
-    this.listaElementos = [];  // Limpiamos la lista de turnos disponibles
-    for (let i = 0; i < 15; i++) {  // Iteramos sobre los próximos 15 días
-      const dia = new Date(ahora);
-      dia.setDate(ahora.getDate() + i);
-      const diaActual = dia.getDay();  // Obtenemos el día actual de la semana (0 = Domingo, 6 = Sábado)  
-      const esDiaHabil = diaActual >= 1 && diaActual <= 6; // Verificamos si el día es hábil (lunes a viernes o sábado)
-      if (!esDiaHabil) continue; // Solo procesamos días hábiles
 
+    for (let i = 0; i < 15; i++) {
+      const dia = new Date(inicioDelDia);
+      dia.setDate(inicioDelDia.getDate() + i); // Ajustamos el día actual
+    
+      const diaSemana = dia.getDay(); // Obtenemos el día de la semana
+      const esDiaHabil = diaSemana >= 1 && diaSemana <= 6;
+      if (!esDiaHabil) continue; // Saltar fines de semana
+    
       const diasQueTrabajaElEspecialista = this.obtenerDiasTrabajo(especialistaInformacion, especialidad.nombre);
-  
-      if (!diasQueTrabajaElEspecialista.includes(diaActual)) continue; // Solo se calculan turnos en los días que trabaja el especialista
-
-      // Obtenemos el horario del especialista en el día específico
-      const horarioDia = diaActual === 6 ? clinicaHorarios.sabado : clinicaHorarios.lunesViernes; 
-      const disponibilidadDelEspecialistaEnElDia = especialidad.horariosDisponibilidad.find(d => d.dia == diaActual);
-
+      if (!diasQueTrabajaElEspecialista.includes(diaSemana)) continue; // Verificar si el especialista trabaja ese día
+    
+      const horarioDia = diaSemana === 6 ? clinicaHorarios.sabado : clinicaHorarios.lunesViernes;
+      const disponibilidadDelEspecialistaEnElDia = especialidad.horariosDisponibilidad.find(d => d.dia == diaSemana);
+    
       if (!disponibilidadDelEspecialistaEnElDia) continue;
-
-      const inicioTrabajo = this.convertirHoraADate(dia, disponibilidadDelEspecialistaEnElDia.desde > horarioDia.desde ? disponibilidadDelEspecialistaEnElDia.desde : horarioDia.desde);
-      const finTrabajo = this.convertirHoraADate(dia, disponibilidadDelEspecialistaEnElDia.hasta < horarioDia.hasta ? disponibilidadDelEspecialistaEnElDia.hasta : horarioDia.hasta);
-  
-      // Generamos los turnos dentro del rango de trabajo
+    
+      const inicioTrabajo = this.convertirHoraADate(
+        dia,
+        disponibilidadDelEspecialistaEnElDia.desde > horarioDia.desde ? disponibilidadDelEspecialistaEnElDia.desde : horarioDia.desde
+      );
+    
+      const finTrabajo = this.convertirHoraADate(
+        dia,
+        disponibilidadDelEspecialistaEnElDia.hasta < horarioDia.hasta ? disponibilidadDelEspecialistaEnElDia.hasta : horarioDia.hasta
+      );
+    
+      // Verificar solo el día actual contra la hora actual
+      const esHoy = dia.toDateString() === ahora.toDateString();
+    
+      // Generar turnos
       let turno = new Date(inicioTrabajo);
       while (turno < finTrabajo) {
         const finTurno = new Date(turno.getTime() + especialidad.duracionTurno * milisegundosEnMinuto);
-  
-        // Verificamos si el turno ya fue tomado
-        const turnoOcupado = turnosTomados.some(t => t.fecha === dia.toISOString().split('T')[0] && t.hora === turno.toTimeString().split(' ')[0]);
+    
+        const turnoOcupado = turnosTomados.some(t => {
+          const fechaTurno = new Date(t.fecha).toISOString().split('T')[0];
+          return fechaTurno === dia.toISOString().split('T')[0] && t.hora === turno.toTimeString().split(' ')[0];
+        });
+    
+        // Excluir turnos pasados solo si es el día actual
+        const esTurnoEnPasado = esHoy && turno < ahora;
+    
         const horario = {
           fecha: dia.toISOString().split('T')[0],
           hora: turno.toTimeString().split(' ')[0],
-          disponible: !turnoOcupado
+          disponible: !turnoOcupado && !esTurnoEnPasado
         };
         this.listaElementos.push(horario);
-  
-        // Avanzamos al siguiente turno en el tiempo
+    
         turno = finTurno;
       }
     }
+    
   }
 
   /**

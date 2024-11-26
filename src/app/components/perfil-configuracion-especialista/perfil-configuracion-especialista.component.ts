@@ -93,7 +93,7 @@ export class PerfilConfiguracionEspecialistaComponent implements OnInit {
    */
   public agregarHorario(i: number): void {
     this.getHorariosDisponibilidad(i).push(
-      this.crearGrupoHorario({ dia: 0, desde: '08:00', hasta: '19:00' })
+      this.crearGrupoHorario({ dia: 1, desde: '08:00', hasta: '19:00' })
     );
   }
 
@@ -139,7 +139,7 @@ export class PerfilConfiguracionEspecialistaComponent implements OnInit {
    * @returns Un array de números que representa las horas disponibles.
    */
   public getHorasDisponibles(dia: number): number[] {
-    return dia === 6 ? this.range(8, 14) : this.range(8, 19); // Sábados de 08 a 14, lunes a viernes de 08 a 19
+    return dia == 6 ? this.range(8, 14) : this.range(8, 19); // Sábados de 08 a 14, lunes a viernes de 08 a 19
   }
 
   /**
@@ -192,5 +192,4 @@ export class PerfilConfiguracionEspecialistaComponent implements OnInit {
 
     return true; // No se encontraron incompatibilidades de horarios
   }
-  
 }
