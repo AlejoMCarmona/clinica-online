@@ -15,11 +15,12 @@ import { FormsModule } from '@angular/forms';
 import { MensajesService } from '../../services/mensajes.service';
 import { WhereFilterOp } from '@angular/fire/firestore';
 import { OcultarPalabraPipe } from '../../pipes/ocultar-palabra.pipe';
+import { TooltipDirective } from '../../directives/tooltip.directive';
 
 @Component({
   selector: 'app-mi-perfil',
   standalone: true,
-  imports: [ CommonModule, PerfilConfiguracionEspecialistaComponent, TablaHistoriaClinicaComponent, FormsModule, OcultarPalabraPipe ],
+  imports: [ CommonModule, PerfilConfiguracionEspecialistaComponent, TablaHistoriaClinicaComponent, FormsModule, OcultarPalabraPipe, TooltipDirective ],
   templateUrl: './mi-perfil-page.component.html',
   styleUrl: './mi-perfil-page.component.css'
 })

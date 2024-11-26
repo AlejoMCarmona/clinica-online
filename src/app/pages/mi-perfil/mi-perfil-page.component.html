@@ -10,7 +10,7 @@
           <p><strong>Apellido:</strong> {{ usuario.informacion.apellido }}</p>
           <div class="row align-items-center">
             <div class="col-8">
-              <p><strong>Email:</strong> {{ ocultarCorreo ? (usuario.email | ocultarPalabra ) : usuario.email }} </p>
+              <p tooltip="El email está oculto por cuestiones de seguridad. Haz click en el botón para cambiar su visibilidad."><strong>Email:</strong> {{ ocultarCorreo ? (usuario.email | ocultarPalabra ) : usuario.email }} </p>
             </div>
             <div class="col-auto">
               <button *ngIf="!this.ocultarCorreo" class="btn btn-dark" (click)="ocultarCorreo = !ocultarCorreo"><i class="bi bi-eye-slash"></i></button>
@@ -20,7 +20,7 @@
           <p><strong>Edad:</strong> {{ usuario.informacion.edad }}</p>         
           <div class="row align-items-center">
             <div class="col-8">
-              <p><strong>DNI:</strong> {{ ocultarDNI ? (usuario.informacion.dni | ocultarPalabra : false ) : usuario.informacion.dni }} </p>
+              <p tooltip="El DNI está oculto por cuestiones de seguridad. Haz click en el botón para cambiar su visibilidad."><strong>DNI:</strong> {{ ocultarDNI ? (usuario.informacion.dni | ocultarPalabra : false ) : usuario.informacion.dni }} </p>
             </div>
             <div class="col-auto">
               <button *ngIf="!this.ocultarDNI" class="btn btn-dark" (click)="ocultarDNI = !ocultarDNI"><i class="bi bi-eye-slash"></i></button>
