@@ -26,7 +26,7 @@
             </div>
             <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'paciente' || rol == 'especialista'">
                 <div class="card card-clickeable" routerLink="/mis-turnos">
-                    <i class="bi bi-calendar-check mx-auto"></i>
+                    <i class="bi bi-calendar-week mx-auto"></i>
                     <div class="card-body">
                         <h5 class="card-title">Mis turnos</h5>
                         <p class="card-text fs-6">Gestiona tus turnos.</p>
@@ -44,7 +44,7 @@
             </div>
             <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'admin'">
                 <div class="card card-clickeable" routerLink="/turnos">
-                    <i class="bi bi-calendar-plus mx-auto"></i>
+                    <i class="bi bi-calendar-week mx-auto"></i>
                     <div class="card-body">
                         <h5 class="card-title">Turnos</h5>
                         <p class="card-text">Observa todos los turnos de la clínica.</p>
@@ -53,10 +53,19 @@
             </div>
             <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'especialista'">
                 <div class="card card-clickeable" routerLink="/pacientes">
-                    <i class="bi bi-calendar-plus mx-auto"></i>
+                    <i class="bi bi-person-vcard mx-auto"></i>
                     <div class="card-body">
                         <h5 class="card-title">Pacientes</h5>
                         <p class="card-text">Observa la información de tus pacientes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center mb-3" *ngIf="rol == 'admin'">
+                <div class="card card-clickeable" routerLink="/informes">
+                    <i class="bi bi-graph-up-arrow mx-auto"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Informes</h5>
+                        <p class="card-text">Observa diferentes informes sobre la actividad en la clínica.</p>
                     </div>
                 </div>
             </div>
